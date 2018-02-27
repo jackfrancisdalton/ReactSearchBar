@@ -64,26 +64,34 @@ body
                     left: 50%
 
 
+            $resultHeight: 50px;
+
             .search-result
                 overflow: hidden
-                display: block
+                display: flex
                 width: 100%
-                border: 1px solid green
-                background: #444
+                background: #fff
+                color: #000
+                padding: 10px
+                border-top: 1px solid grey;
+                box-sizing: border-box;
+                text-decoration: none
+
+                &:first-child 
+                    border: none
 
                 &.selected
-                    border: #f00
-                    color: blue
+                    background: rgb(9, 134, 196)
 
                     .info-container
-                        border: 1px solid blue
+                        color: white
+
 
                 .image-container
-                    float: left
-                    width: 30%
-                    border: 1px solid blue
+                    flex-grow: 1
+                    width: 25%
                     box-sizing: border-box
-                    height: 50px
+                    height: $resultHeight
                     
 
                     .result-image
@@ -93,16 +101,18 @@ body
                         padding: 0
 
                 .info-container
-                    float: left
-                    width: 70%
+                    flex-grow: 4
                     height: 50px
-                    border: 1px solid red
+                    width: 75%
+                    height: $resultHeight;
                     box-sizing: border-box
                     padding: 0
                     margin: 0
 
                     .result-title
-                        color: red
+                        color: black
+                        line-height: $resultHeight
+                        padding-left: 10px 
 
 
 

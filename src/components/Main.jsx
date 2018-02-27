@@ -2,7 +2,7 @@ require('normalize.css/normalize.css');
 require('styles/App.sass');
 
 import React from 'react';
-
+import { NavLink } from 'react-router-dom';
 let yeomanImage = require('../images/yeoman.png');
 
 class SearchResult extends React.Component {
@@ -18,11 +18,25 @@ class SearchResult extends React.Component {
 	}
 
 	render() {
-		return (
-			<a onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)} 
-				className={'search-result' + (this.props.isSelected ? " selected" : "")} >
+
+		let contents = (
+			<div>
 				<div className='image-container'><img className='result-image' src={"http://via.placeholder.com/200x200"}/></div>
 				<div className='info-container'><div className='result-title'>{this.props.title}</div></div>
+			</div>
+		)
+
+		if(this.props.useNavLink) {
+			return (
+				<NavLink to="#" title={this.props.title} onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)} className={'search-result' + (this.props.isSelected ? " selected" : "")} >
+					{contents}
+				</NavLink>
+			)
+		}
+		
+		return (
+			<a href="#" title={this.props.title} onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)} className={'search-result' + (this.props.isSelected ? " selected" : "")} >
+				{contents}
 			</a>
 		)
 	}
@@ -116,6 +130,10 @@ class SearchBar extends React.Component {
 		this.handleClickOutside = this.handleClickOutside.bind(this)
 	}
 
+	static defaultProps = {
+	  useNavLink: false
+	};
+
 	componentWillMount() {
 		this.timeouts = [];
 	}
@@ -151,6 +169,11 @@ class SearchBar extends React.Component {
 			// ENTER
 			case 13: { 
 				e.preventDefault();
+				this.setState({
+					isActive: false,
+					selectedResult: 0,
+					resultsLoading: false
+				})
 				break;
 			}
 			// ESCAPE
@@ -206,7 +229,6 @@ class SearchBar extends React.Component {
 	 			fetch(self.props.queryURL)
 					.then(response => response.json())
 					.then(json => {
-						console.log("HIT")
 						setTimeout(function() {
 							self.setState({
 								resultSet: json,
@@ -215,7 +237,7 @@ class SearchBar extends React.Component {
 						}, 500);
 					})	
 			}
-		}, 500));	
+		}, self.props.searchDelay));	
 	}
 
 	onHoverSetSelected(newIndex) {
@@ -246,7 +268,14 @@ class SearchBar extends React.Component {
 			this.state.resultSet.forEach(function(item, idx) {
 				if(self.props.resultsToDisplay > idx) {
 					let isSelected = ((self.state.selectedResult == idx) ? true : false)
-					results.push(<SearchResult key={idx} keyRef={idx} title={item.title} onHoverSelect={self.onHoverSetSelected} isSelected={isSelected} />)
+					results.push(
+						<SearchResult key={idx} 
+								keyRef={idx} 
+								title={item.title}
+								onHoverSelect={self.onHoverSetSelected} 
+								isSelected={isSelected}
+								useNavLink={self.props.useNavLink} />
+					)
 				}
 			})
 		}
@@ -283,7 +312,7 @@ class AppComponent extends React.Component {
       <div className='index'>
         <img src={yeomanImage} alt='Yeoman Generator' />
         <div className='notice'>Please edit <code>src/components/Main.js</code> to get started!</div>
-      	<SearchBar queryURL={"http://localhost:3030/users"} resultsToDisplay={3} searchDelay={0.2} />
+      	<SearchBar queryURL={"http://localhost:3030/users"} resultsToDisplay={3} searchDelay={200} useNavLink={false}/>
       </div>
     );
   }
@@ -293,3 +322,11 @@ class AppComponent extends React.Component {
 AppComponent.defaultProps = { };
 
 export default AppComponent;
+
+
+
+//TODO
+// add support for class overrides
+// add support for navlink option
+// add support for (has image) + (has subtitle)
+// add support for "mapper function"
