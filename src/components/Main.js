@@ -125,18 +125,56 @@ class SearchBar extends React.Component {
     }
 
 	handleKeyDown(e) {
-		if (e.keyCode === 38) {
 
-			let nextIndex = this.state.selectedResult - 1;
-	    	if(this.state.selectedResult <= 0) { nextIndex = (this.props.resultsToDisplay - 1) }
-	    	this.setState({ selectedResult: nextIndex })
-
-	    } else if (e.keyCode === 40) {
-
-	    	let nextIndex = this.state.selectedResult + 1;
-	    	if(this.state.selectedResult >= (this.props.resultsToDisplay - 1)) { nextIndex = 0 }
-	    	this.setState({ selectedResult: nextIndex })
-
+		switch(e.keyCode) {
+			// TAB
+			case 9: { 
+				e.preventDefault();
+				
+				if(event.shiftKey) {
+					let nextIndex = this.state.selectedResult - 1;
+		    		if(this.state.selectedResult <= 0) { nextIndex = (this.props.resultsToDisplay - 1) }
+		    		this.setState({ selectedResult: nextIndex })
+				} else {
+					let nextIndex = this.state.selectedResult + 1;
+		    		if(this.state.selectedResult >= (this.props.resultsToDisplay - 1)) { nextIndex = 0 }
+		    		this.setState({ selectedResult: nextIndex })
+				}
+				
+				break;
+			}
+			// ENTER
+			case 13: { 
+				e.preventDefault();
+				break;
+			}
+			// ESCAPE
+			case 27: { 
+				e.preventDefault();
+				this.setState({
+					isActive: false,
+					selectedResult: 0,
+					searchQuery: '',
+					resultsLoading: false
+				})
+				break;
+			}
+			// DOWN
+			case 38: {
+				e.preventDefault(); 
+				let nextIndex = this.state.selectedResult - 1;
+		    	if(this.state.selectedResult <= 0) { nextIndex = (this.props.resultsToDisplay - 1) }
+		    	this.setState({ selectedResult: nextIndex })
+				break;
+			}
+			// UP
+	    	case 40: {
+	    		e.preventDefault();
+		    	let nextIndex = this.state.selectedResult + 1;
+		    	if(this.state.selectedResult >= (this.props.resultsToDisplay - 1)) { nextIndex = 0 }
+		    	this.setState({ selectedResult: nextIndex })
+				break;
+			}
 	    }
 
 	    // add tab
@@ -189,6 +227,8 @@ class SearchBar extends React.Component {
     }
 
     handleClickOutside(event) {
+
+    	// if the drop down is active, and the mouse clicks off of the results hide the results
         if(this.state.isActive) {
 	        if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
 	     		this.setState({ isActive: false })       
