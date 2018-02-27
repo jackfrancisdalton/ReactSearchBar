@@ -19,10 +19,11 @@ class SearchResult extends React.Component {
 
 	render() {
 		return (
-			<div className={'search-result' + (this.props.isSelected ? " selected" : "")}>
+			<a 	onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)} 
+				className={'search-result' + (this.props.isSelected ? " selected" : "")} >
 				<div className='image-container'><img className='result-image' src={"http://via.placeholder.com/200x200"}/></div>
 				<div className='info-container'><div className='result-title'>{this.props.title}</div></div>
-			</div>
+			</a>
 		)
 	}
 }
@@ -110,6 +111,7 @@ class SearchBar extends React.Component {
 
 		this.handleKeyDown = this.handleKeyDown.bind(this)
 		this.onType = this.onType.bind(this)
+		this.onHoverSetSelected = this.onHoverSetSelected.bind(this)
 	}
 
 	handleKeyDown(e) {
@@ -117,7 +119,6 @@ class SearchBar extends React.Component {
 			let nextIndex = this.state.selectedResult - 1;
 
 	    	if(this.state.selectedResult <= 0) {
-	    		console.log("RESET B")
 	    		nextIndex = (this.props.resultsToDisplay - 1)
 	    	}
 	    	
@@ -127,9 +128,6 @@ class SearchBar extends React.Component {
 
 	    	if(this.state.selectedResult >= (this.props.resultsToDisplay - 1)) {
 	    		nextIndex = 0
-
-	    		console.log("RESET A")
-
 	    	}
 	    	
 	    	this.setState({ selectedResult: nextIndex })
@@ -163,17 +161,21 @@ class SearchBar extends React.Component {
 			})
 	}
 
+	onHoverSetSelected(newIndex) {
+		this.setState({
+			selectedResult: newIndex
+		});
+	}
+
 	render() {
 		let self = this;
 		let results = [];
-		console.log(this.state.selectedResult)
-
 
 		if(this.state.resultSet.length > 0) {
 			this.state.resultSet.forEach(function(item, idx) {
 				if(self.props.resultsToDisplay > idx) {
 					let isSelected = ((self.state.selectedResult == idx) ? true : false)
-					{results.push(<SearchResult key={idx} title={item.title} isSelected={isSelected} />)}
+					{results.push(<SearchResult key={idx} keyRef={idx} title={item.title} onHoverSelect={self.onHoverSetSelected} isSelected={isSelected} />)}
 				}
 			})
 		}
