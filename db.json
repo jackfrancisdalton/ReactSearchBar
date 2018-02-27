@@ -1,0 +1,35 @@
+{
+  "users": [
+    { "title": "Jack", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "James", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Tim", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Tom", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Jerry", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Theo", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Bob", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Harry", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Chris", "imgURL": "http://via.placeholder.com/100x100" }
+  ],
+  "groups": [
+    { "title": "Jack", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "James", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Tim", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Tom", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Jerry", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Theo", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Bob", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Harry", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Chris", "imgURL": "http://via.placeholder.com/100x100" }
+  ],
+  "events": [
+    { "title": "Jack", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "James", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Tim", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Tom", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Jerry", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Theo", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Bob", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Harry", "imgURL": "http://via.placeholder.com/100x100" },
+    { "title": "Chris", "imgURL": "http://via.placeholder.com/100x100" }
+  ]
+}

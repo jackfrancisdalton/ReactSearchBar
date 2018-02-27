@@ -5,12 +5,6 @@ body
 
 .index 
 
-    img 
-        margin: 40px auto
-        border-radius: 4px
-        background: #fff
-        display: block
-
     .notice 
         margin: 20px auto
         padding: 15px 0
@@ -19,22 +13,90 @@ body
         border-width: 1px 0
         background: #666
 
+    h1, h2, h3, h4, h5 
+        color: #000
+
 
 
 
 .search-bar-container
     width: 300px
-    marign: 10px auto
-    
+    margin: 10px auto
+    position: relative
+
     .search-input-container
-        padding: 10px
-        border: 1px solid red
+        // border: 1px solid red
 
         .search-input
+            outline: none
+            border: 1px solid black
+            border-radius: 3px
+            padding: 5px
+            box-sizing: border-box
             width: 100%
 
 
     .drop-down-container
-        padding: 10px
-        border: 1px solid blue
+        // padding: 10px
+        box-sizing: border-box
+        // border: 1px solid blue
+        position: absolute
+        top: 100%
+        left: 0
+        width: 100%
+
+        .drop-down
+            background: white
+            position: relative
+
+            .loading-results-cover
+                width: 100%
+                height: 100%
+                position: absolute
+                top: 0
+                left: 0
+                background: rgba(255, 255, 255, 0.7)
+
+                .loading-result-message
+                    color: black
+                    position: relative;
+                    top: 50%
+                    left: 50%
+
+            .result-group
+
+                .search-result
+                    overflow: hidden
+                    display: block
+                    width: 100%
+                    border: 1px solid green
+                    background: #444
+
+                    .image-container
+                        float: left
+                        width: 30%
+                        border: 1px solid blue
+                        box-sizing: border-box
+                        height: 50px
+                        
+
+                        .result-image
+                            width: 100%
+                            height: 100%
+                            margin: 0
+                            padding: 0
+
+                    .info-container
+                        float: left
+                        width: 70%
+                        height: 50px
+                        border: 1px solid red
+                        box-sizing: border-box
+                        padding: 0
+                        margin: 0
+
+                        .result-title
+                            color: red
+
+
 
