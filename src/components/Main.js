@@ -5,22 +5,6 @@ import React from 'react';
 
 let yeomanImage = require('../images/yeoman.png');
 
-var dataSet = [
-	{
-		title: 'Jack',
-		img: 'http://via.placeholder.com/200x200'
-	},
-	{
-		title: 'John',
-		img: 'http://via.placeholder.com/200x200'
-	},
-	{
-		title: 'James',
-		img: 'http://via.placeholder.com/200x200'
-	}
-]
-
-
 class SearchResult extends React.Component {
 	constructor(props) {
 		super(props)
@@ -35,7 +19,7 @@ class SearchResult extends React.Component {
 
 	render() {
 		return (
-			<div className='search-result'>
+			<div className={'search-result' + (this.props.isSelected ? " selected" : "")}>
 				<div className='image-container'><img className='result-image' src={"http://via.placeholder.com/200x200"}/></div>
 				<div className='info-container'><div className='result-title'>{this.props.title}</div></div>
 			</div>
@@ -121,9 +105,35 @@ class SearchBar extends React.Component {
 			searchQuery: '',
 			resultSet: '',
 			resultsLoading: false,
+			selectedResult: 0
 		}
 
+		this.handleKeyDown = this.handleKeyDown.bind(this)
 		this.onType = this.onType.bind(this)
+	}
+
+	handleKeyDown(e) {
+		if (e.keyCode === 38) {
+			let nextIndex = this.state.selectedResult - 1;
+
+	    	if(this.state.selectedResult <= 0) {
+	    		console.log("RESET B")
+	    		nextIndex = (this.props.resultsToDisplay - 1)
+	    	}
+	    	
+	    	this.setState({ selectedResult: nextIndex })
+	    } else if (e.keyCode === 40) {
+	    	let nextIndex = this.state.selectedResult + 1;
+
+	    	if(this.state.selectedResult >= (this.props.resultsToDisplay - 1)) {
+	    		nextIndex = 0
+
+	    		console.log("RESET A")
+
+	    	}
+	    	
+	    	this.setState({ selectedResult: nextIndex })
+	    }
 	}
 
 	onType(event) {
@@ -156,11 +166,14 @@ class SearchBar extends React.Component {
 	render() {
 		let self = this;
 		let results = [];
+		console.log(this.state.selectedResult)
+
 
 		if(this.state.resultSet.length > 0) {
 			this.state.resultSet.forEach(function(item, idx) {
 				if(self.props.resultsToDisplay > idx) {
-					results.push(<SearchResult key={idx} title={item.title} />)
+					let isSelected = ((self.state.selectedResult == idx) ? true : false)
+					{results.push(<SearchResult key={idx} title={item.title} isSelected={isSelected} />)}
 				}
 			})
 		}
@@ -168,7 +181,7 @@ class SearchBar extends React.Component {
 		return (
 			<div className='search-bar-container'>
 				<div className='search-input-container'>
-					<input type='text' value={this.state.searchQuery} onChange={this.onType} className='search-input'></input>
+					<input type='text' value={this.state.searchQuery} onKeyDown={this.handleKeyDown} onChange={this.onType} className='search-input' />
 				</div>
 				{this.state.isActive &&
 					<div className='drop-down-container'>

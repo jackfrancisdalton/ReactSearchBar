@@ -63,40 +63,46 @@ body
                     top: 50%
                     left: 50%
 
-            .result-group
 
-                .search-result
-                    overflow: hidden
-                    display: block
-                    width: 100%
-                    border: 1px solid green
-                    background: #444
+            .search-result
+                overflow: hidden
+                display: block
+                width: 100%
+                border: 1px solid green
+                background: #444
 
-                    .image-container
-                        float: left
-                        width: 30%
-                        border: 1px solid blue
-                        box-sizing: border-box
-                        height: 50px
-                        
-
-                        .result-image
-                            width: 100%
-                            height: 100%
-                            margin: 0
-                            padding: 0
+                &.selected
+                    border: #f00
+                    color: blue
 
                     .info-container
-                        float: left
-                        width: 70%
-                        height: 50px
-                        border: 1px solid red
-                        box-sizing: border-box
-                        padding: 0
-                        margin: 0
+                        border: 1px solid blue
 
-                        .result-title
-                            color: red
+                .image-container
+                    float: left
+                    width: 30%
+                    border: 1px solid blue
+                    box-sizing: border-box
+                    height: 50px
+                    
+
+                    .result-image
+                        width: 100%
+                        height: 100%
+                        margin: 0
+                        padding: 0
+
+                .info-container
+                    float: left
+                    width: 70%
+                    height: 50px
+                    border: 1px solid red
+                    box-sizing: border-box
+                    padding: 0
+                    margin: 0
+
+                    .result-title
+                        color: red
 
 
 
