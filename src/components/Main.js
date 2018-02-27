@@ -112,26 +112,37 @@ class SearchBar extends React.Component {
 		this.handleKeyDown = this.handleKeyDown.bind(this)
 		this.onType = this.onType.bind(this)
 		this.onHoverSetSelected = this.onHoverSetSelected.bind(this)
+		this.setWrapperRef = this.setWrapperRef.bind(this)
+		this.handleClickOutside = this.handleClickOutside.bind(this)
 	}
+
+	componentDidMount() {
+        document.addEventListener('mousedown', this.handleClickOutside);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('mousedown', this.handleClickOutside);
+    }
 
 	handleKeyDown(e) {
 		if (e.keyCode === 38) {
+
 			let nextIndex = this.state.selectedResult - 1;
-
-	    	if(this.state.selectedResult <= 0) {
-	    		nextIndex = (this.props.resultsToDisplay - 1)
-	    	}
-	    	
+	    	if(this.state.selectedResult <= 0) { nextIndex = (this.props.resultsToDisplay - 1) }
 	    	this.setState({ selectedResult: nextIndex })
+
 	    } else if (e.keyCode === 40) {
-	    	let nextIndex = this.state.selectedResult + 1;
 
-	    	if(this.state.selectedResult >= (this.props.resultsToDisplay - 1)) {
-	    		nextIndex = 0
-	    	}
-	    	
+	    	let nextIndex = this.state.selectedResult + 1;
+	    	if(this.state.selectedResult >= (this.props.resultsToDisplay - 1)) { nextIndex = 0 }
 	    	this.setState({ selectedResult: nextIndex })
+
 	    }
+
+	    // add tab
+	    // add tab shift
+	    // add enter 
+	    // add esc 
 	}
 
 	onType(event) {
@@ -139,26 +150,32 @@ class SearchBar extends React.Component {
 		let searchQuery = event.target.value;
 		let isActive = false;
 
+		// if searchquery is not nothing then search for result
 		if(searchQuery.length) {			
 			isActive = true;
 		}
 
+		// activaite loading cover on result set
 		this.setState({
 			isActive: isActive,
 			searchQuery: searchQuery,
 			resultsLoading: true
 		});
 
-		fetch(this.props.queryURL)
-			.then(response => response.json())
-			.then(json => {
-				setTimeout(function() {
-					self.setState({
-						resultSet: json,
-						resultsLoading: false
-					});
-				}, 500);
-			})
+
+		// fetch results for current query then remove loading cover
+		if(isActive) {
+			fetch(this.props.queryURL)
+				.then(response => response.json())
+				.then(json => {
+					setTimeout(function() {
+						self.setState({
+							resultSet: json,
+							resultsLoading: false
+						});
+					}, 500);
+				})	
+		}
 	}
 
 	onHoverSetSelected(newIndex) {
@@ -166,6 +183,18 @@ class SearchBar extends React.Component {
 			selectedResult: newIndex
 		});
 	}
+
+	setWrapperRef(node) {
+        this.wrapperRef = node;
+    }
+
+    handleClickOutside(event) {
+        if(this.state.isActive) {
+	        if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
+	     		this.setState({ isActive: false })       
+	        }	
+        }
+    }
 
 	render() {
 		let self = this;
@@ -181,12 +210,12 @@ class SearchBar extends React.Component {
 		}
 
 		return (
-			<div className='search-bar-container'>
+			<div className='search-bar-container' ref={this.setWrapperRef}>
 				<div className='search-input-container'>
 					<input type='text' value={this.state.searchQuery} onKeyDown={this.handleKeyDown} onChange={this.onType} className='search-input' />
 				</div>
 				{this.state.isActive &&
-					<div className='drop-down-container'>
+					<div className='drop-down-container' >
 						<div className='drop-down'>
 							<div>
 								{this.state.resultsLoading &&
