@@ -19,7 +19,7 @@ class SearchResult extends React.Component {
 
 	render() {
 		return (
-			<a 	onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)} 
+			<a onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)} 
 				className={'search-result' + (this.props.isSelected ? " selected" : "")} >
 				<div className='image-container'><img className='result-image' src={"http://via.placeholder.com/200x200"}/></div>
 				<div className='info-container'><div className='result-title'>{this.props.title}</div></div>
@@ -28,74 +28,74 @@ class SearchResult extends React.Component {
 	}
 }
 
-class QueryResultBox extends React.Component {
-	constructor(props) {
-		super(props)
-		// show section title
-		// section title 
-		// section class override
-		// number of results desired
-		// sort function 
+// class QueryResultBox extends React.Component {
+// 	constructor(props) {
+// 		super(props)
+// 		// show section title
+// 		// section title 
+// 		// section class override
+// 		// number of results desired
+// 		// sort function 
 
-		this.state = {
-			resultSet: []
-		}
-	}
+// 		this.state = {
+// 			resultSet: []
+// 		}
+// 	}
 
-	componentWillReceiveProps(nextProps) {
-		fetch(this.props.fetchURL)
-			.then(response => response.json())
-			.then(json => {
-				this.setState({
-					resultSet: json
-				})
-			})
-	}
+// 	componentWillReceiveProps(nextProps) {
+// 		fetch(this.props.fetchURL)
+// 			.then(response => response.json())
+// 			.then(json => {
+// 				this.setState({
+// 					resultSet: json
+// 				})
+// 			})
+// 	}
 
-	render() {
-		let self = this;
-		let resultsDOM = []
+// 	render() {
+// 		let self = this;
+// 		let resultsDOM = []
 
-		if(this.state.resultSet.length) {
-			this.state.resultSet.forEach(function(item, idx) {
-				if(idx < self.props.numResultsToShow ) {
-					resultsDOM.push(<SearchResult title={item.title} />)
-				}
-			})
-		}
+// 		if(this.state.resultSet.length) {
+// 			this.state.resultSet.forEach(function(item, idx) {
+// 				if(idx < self.props.numResultsToShow ) {
+// 					resultsDOM.push(<SearchResult title={item.title} />)
+// 				}
+// 			})
+// 		}
 
-		return(
-			<div className='result-group'>
-				<h3>{this.props.title}</h3>
-				{resultsDOM}
-			</div>
-		)
-	}
-}
+// 		return(
+// 			<div className='result-group'>
+// 				<h3>{this.props.title}</h3>
+// 				{resultsDOM}
+// 			</div>
+// 		)
+// 	}
+// }
 
-class DisplayResultBox extends React.Component {
-	constructor(props) {
-		super(props)
-		// show section title
-		// section title 
-		// section class override
-		// number of results desired
-		// sort function 
-	}
+// class DisplayResultBox extends React.Component {
+// 	constructor(props) {
+// 		super(props)
+// 		// show section title
+// 		// section title 
+// 		// section class override
+// 		// number of results desired
+// 		// sort function 
+// 	}
 
-	render() {
-		let resultItems = [];
-		this.props.resultSet.forEach(function(item, idx) {
-			resultItems.push(<SearchResult key={idx} title={item.title} img={item.img} />)
-		})
+// 	render() {
+// 		let resultItems = [];
+// 		this.props.resultSet.forEach(function(item, idx) {
+// 			resultItems.push(<SearchResult key={idx} title={item.title} img={item.img} />)
+// 		})
 
-		return(
-			<div className='result-group'>
-				{resultItems}
-			</div>
-		)
-	}
-}
+// 		return(
+// 			<div className='result-group'>
+// 				{resultItems}
+// 			</div>
+// 		)
+// 	}
+// }
 
 class SearchBar extends React.Component {
 	constructor(props) {
@@ -106,7 +106,7 @@ class SearchBar extends React.Component {
 			searchQuery: '',
 			resultSet: '',
 			resultsLoading: false,
-			selectedResult: 0
+			selectedResult: 0,
 		}
 
 		this.handleKeyDown = this.handleKeyDown.bind(this)
@@ -116,12 +116,17 @@ class SearchBar extends React.Component {
 		this.handleClickOutside = this.handleClickOutside.bind(this)
 	}
 
+	componentWillMount() {
+		this.timeouts = [];
+	}
+
 	componentDidMount() {
         document.addEventListener('mousedown', this.handleClickOutside);
     }
 
     componentWillUnmount() {
         document.removeEventListener('mousedown', this.handleClickOutside);
+        this.timeouts.forEach(clearTimeout);
     }
 
 	handleKeyDown(e) {
@@ -131,7 +136,7 @@ class SearchBar extends React.Component {
 			case 9: { 
 				e.preventDefault();
 				
-				if(event.shiftKey) {
+				if(e.shiftKey) {
 					let nextIndex = this.state.selectedResult - 1;
 		    		if(this.state.selectedResult <= 0) { nextIndex = (this.props.resultsToDisplay - 1) }
 		    		this.setState({ selectedResult: nextIndex })
@@ -176,11 +181,6 @@ class SearchBar extends React.Component {
 				break;
 			}
 	    }
-
-	    // add tab
-	    // add tab shift
-	    // add enter 
-	    // add esc 
 	}
 
 	onType(event) {
@@ -200,20 +200,22 @@ class SearchBar extends React.Component {
 			resultsLoading: true
 		});
 
-
-		// fetch results for current query then remove loading cover
-		if(isActive) {
-			fetch(this.props.queryURL)
-				.then(response => response.json())
-				.then(json => {
-					setTimeout(function() {
-						self.setState({
-							resultSet: json,
-							resultsLoading: false
-						});
-					}, 500);
-				})	
-		}
+		this.timeouts.forEach(clearTimeout);
+		this.timeouts.push(setTimeout(function() {
+			if(isActive) {
+	 			fetch(self.props.queryURL)
+					.then(response => response.json())
+					.then(json => {
+						console.log("HIT")
+						setTimeout(function() {
+							self.setState({
+								resultSet: json,
+								resultsLoading: false
+							});
+						}, 500);
+					})	
+			}
+		}, 500));	
 	}
 
 	onHoverSetSelected(newIndex) {
@@ -244,7 +246,7 @@ class SearchBar extends React.Component {
 			this.state.resultSet.forEach(function(item, idx) {
 				if(self.props.resultsToDisplay > idx) {
 					let isSelected = ((self.state.selectedResult == idx) ? true : false)
-					{results.push(<SearchResult key={idx} keyRef={idx} title={item.title} onHoverSelect={self.onHoverSetSelected} isSelected={isSelected} />)}
+					results.push(<SearchResult key={idx} keyRef={idx} title={item.title} onHoverSelect={self.onHoverSetSelected} isSelected={isSelected} />)
 				}
 			})
 		}
@@ -281,7 +283,7 @@ class AppComponent extends React.Component {
       <div className='index'>
         <img src={yeomanImage} alt='Yeoman Generator' />
         <div className='notice'>Please edit <code>src/components/Main.js</code> to get started!</div>
-      	<SearchBar queryURL={"http://localhost:3030/users"} resultsToDisplay={3}></SearchBar>
+      	<SearchBar queryURL={"http://localhost:3030/users"} resultsToDisplay={3} searchDelay={0.2} />
       </div>
     );
   }
