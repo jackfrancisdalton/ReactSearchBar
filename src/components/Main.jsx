@@ -127,6 +127,7 @@ class SearchBar extends React.Component {
 		}
 
 		this.handleKeyDown = this.handleKeyDown.bind(this)
+		this.onFocus = this.onFocus.bind(this)
 		this.onType = this.onType.bind(this)
 		this.onHoverSetSelected = this.onHoverSetSelected.bind(this)
 		this.setWrapperRef = this.setWrapperRef.bind(this)
@@ -155,61 +156,94 @@ class SearchBar extends React.Component {
 
 	handleKeyDown(e) {
 
-		switch(e.keyCode) {
-			// TAB
-			case 9: { 
-				e.preventDefault();
-				
-				if(e.shiftKey) {
-					let nextIndex = this.state.selectedResult - 1;
-		    		if(this.state.selectedResult <= 0) { nextIndex = (this.props.resultsToDisplay - 1) }
-		    		this.setState({ selectedResult: nextIndex })
-				} else {
-					let nextIndex = this.state.selectedResult + 1;
-		    		if(this.state.selectedResult >= (this.props.resultsToDisplay - 1)) { nextIndex = 0 }
-		    		this.setState({ selectedResult: nextIndex })
+		// if the drop down is loading don't allow navigation
+		if(!this.state.resultsLoading) {
+			switch(e.keyCode) {
+				// TAB
+				case 9: { 
+					e.preventDefault();
+					
+					if(e.shiftKey) {
+						let nextIndex = this.state.selectedResult - 1;
+			    		if(this.state.selectedResult <= 0) { nextIndex = (this.props.resultsToDisplay - 1) }
+			    		this.setState({ selectedResult: nextIndex })
+					} else {
+						let nextIndex = this.state.selectedResult + 1;
+			    		if(this.state.selectedResult >= (this.props.resultsToDisplay - 1)) { nextIndex = 0 }
+			    		this.setState({ selectedResult: nextIndex })
+					}
+					
+					break;
 				}
-				
-				break;
-			}
-			// ENTER
-			case 13: { 
-				e.preventDefault();
-				this.setState({
-					isActive: false,
-					selectedResult: 0,
-					resultsLoading: false
-				})
-				break;
-			}
-			// ESCAPE
-			case 27: { 
-				e.preventDefault();
-				this.setState({
-					isActive: false,
-					selectedResult: 0,
-					searchQuery: '',
-					resultsLoading: false
-				})
-				break;
-			}
-			// DOWN
-			case 38: {
-				e.preventDefault(); 
-				let nextIndex = this.state.selectedResult - 1;
-		    	if(this.state.selectedResult <= 0) { nextIndex = (this.props.resultsToDisplay - 1) }
-		    	this.setState({ selectedResult: nextIndex })
-				break;
-			}
-			// UP
-	    	case 40: {
-	    		e.preventDefault();
-		    	let nextIndex = this.state.selectedResult + 1;
-		    	if(this.state.selectedResult >= (this.props.resultsToDisplay - 1)) { nextIndex = 0 }
-		    	this.setState({ selectedResult: nextIndex })
-				break;
-			}
-	    }
+				// ENTER
+				case 13: { 
+					e.preventDefault();
+					this.setState({
+						isActive: false,
+						selectedResult: 0,
+						resultsLoading: false
+					})
+					break;
+				}
+				// ESCAPE
+				case 27: { 
+					e.preventDefault();
+					this.setState({
+						isActive: false,
+						selectedResult: 0,
+						searchQuery: '',
+						resultsLoading: false
+					})
+					break;
+				}
+				// DOWN
+				case 38: {
+					e.preventDefault(); 
+					let nextIndex = this.state.selectedResult - 1;
+			    	if(this.state.selectedResult <= 0) { nextIndex = (this.props.resultsToDisplay - 1) }
+			    	this.setState({ selectedResult: nextIndex })
+					break;
+				}
+				// UP
+		    	case 40: {
+		    		e.preventDefault();
+			    	let nextIndex = this.state.selectedResult + 1;
+			    	if(this.state.selectedResult >= (this.props.resultsToDisplay - 1)) { nextIndex = 0 }
+			    	this.setState({ selectedResult: nextIndex })
+					break;
+				}
+		    }
+		}
+		
+	}
+
+	onFocus(event) {
+		if(this.state.searchQuery.length > 0) {
+			let self = this;
+
+			// activaite loading cover on result set
+			this.setState({
+				isActive: true,
+				resultsLoading: true
+			});
+
+			// cancel pending requests
+			this.timeouts.forEach(clearTimeout);
+			
+			// make request based on new searchquery
+			this.timeouts.push(setTimeout(function() {
+	 			fetch(self.props.queryURL)
+					.then(response => response.json())
+					.then(json => {
+						setTimeout(function() {
+							self.setState({
+								resultSet: json,
+								resultsLoading: false
+							});
+						}, 500);
+					})	
+			}, self.props.searchDelay));
+		}
 	}
 
 	onType(event) {
@@ -229,7 +263,10 @@ class SearchBar extends React.Component {
 			resultsLoading: true
 		});
 
+		// cancel pending requests
 		this.timeouts.forEach(clearTimeout);
+		
+		// make request based on new searchquery
 		this.timeouts.push(setTimeout(function() {
 			if(isActive) {
 	 			fetch(self.props.queryURL)
@@ -247,9 +284,13 @@ class SearchBar extends React.Component {
 	}
 
 	onHoverSetSelected(newIndex) {
-		this.setState({
-			selectedResult: newIndex
-		});
+		
+		// if not loading state, handle highlighting result on mouse hover
+		if(!this.state.resultsLoading) {
+			this.setState({
+				selectedResult: newIndex
+			});	
+		}
 	}
 
 	setWrapperRef(node) {
@@ -257,7 +298,6 @@ class SearchBar extends React.Component {
     }
 
     handleClickOutside(event) {
-
     	// if the drop down is active, and the mouse clicks off of the results hide the results
         if(this.state.isActive) {
 	        if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
@@ -290,7 +330,12 @@ class SearchBar extends React.Component {
 		return (
 			<div className='search-bar-container' ref={this.setWrapperRef}>
 				<div className='search-input-container'>
-					<input type='text' value={this.state.searchQuery} onKeyDown={this.handleKeyDown} onChange={this.onType} className='search-input' />
+					<input type='text' 
+							value={this.state.searchQuery} 
+							onKeyDown={this.handleKeyDown} 
+							onFocus={this.onFocus}
+							onChange={this.onType} 
+							className='search-input' />
 				</div>
 				{this.state.isActive &&
 					<div className='drop-down-container' >
