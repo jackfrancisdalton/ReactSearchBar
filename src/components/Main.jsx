@@ -21,7 +21,8 @@ class SearchResult extends React.Component {
 
 		if(this.props.useNavLink) {
 			return (
-				<NavLink to="#" 
+				<NavLink to={this.props.targetURL} 
+					onClick={this.props.onClick}
 					title={this.props.title} 
 					onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}
 					className={'search-result' + (this.props.isSelected ? " selected" : "")} >
@@ -33,7 +34,8 @@ class SearchResult extends React.Component {
 		}
 		
 		return (
-			<a href="#" 
+			<a href={this.props.targetURL} 
+				onClick={this.props.onClick}
 				title={this.props.title} 
 				onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)} 
 				className={'search-result' + (this.props.isSelected ? " selected" : "")} >
@@ -61,6 +63,7 @@ class SearchBar extends React.Component {
 		this.onFocus = this.onFocus.bind(this)
 		this.onType = this.onType.bind(this)
 		this.onHoverSetSelected = this.onHoverSetSelected.bind(this)
+		this.onResultClicked = this.onResultClicked.bind(this)
 		this.setWrapperRef = this.setWrapperRef.bind(this)
 		this.handleClickOutside = this.handleClickOutside.bind(this)
 	}
@@ -215,6 +218,13 @@ class SearchBar extends React.Component {
 		}, self.props.searchDelay));	
 	}
 
+	onResultClicked() {
+		this.timeouts.forEach(clearTimeout);
+		this.setState({
+			isActive: false
+		})
+	}
+
 	onHoverSetSelected(newIndex) {
 		
 		// if not loading state, handle highlighting result on mouse hover
@@ -250,6 +260,7 @@ class SearchBar extends React.Component {
 						<SearchResult key={idx} 
 								keyRef={idx} 
 								title={item.title}
+								targetURL={item.targetURL}
 								imageURL={item.imageURL}
 								onHoverSelect={self.onHoverSetSelected} 
 								isSelected={isSelected}
@@ -268,6 +279,7 @@ class SearchBar extends React.Component {
 							onKeyDown={this.handleKeyDown} 
 							onFocus={this.onFocus}
 							onChange={this.onType} 
+							onClick={this.onResultClicked}
 							className='search-input' />
 				</div>
 				{this.state.isActive &&
@@ -296,8 +308,9 @@ let temp = function(queryReturn) {
 	
 	queryReturn.forEach(function(item, idx) {
 		let newObject = {};
-		newObject.title = item.username;
-		newObject.imageURL= item.imgURL;
+		newObject.title = item.groupName;
+		newObject.imageURL = item.imgURL;
+		newObject.targetURL = item.targetURL; 
 		formattedObjects.push(newObject);
 	});
 
@@ -310,7 +323,7 @@ class AppComponent extends React.Component {
       <div className='index'>
         <img src={yeomanImage} alt='Yeoman Generator' />
         <div className='notice'>Please edit <code>src/components/Main.js</code> to get started!</div>
-      	<SearchBar queryURL={"http://localhost:3030/users"} searchDelay={200} useNavLink={false} circleImage={false} mappingFunction={temp}/>
+      	<SearchBar queryURL={"http://localhost:3030/groups"} searchDelay={200} useNavLink={false} circleImage={false} mappingFunction={temp}/>
       </div>
     );
   }
