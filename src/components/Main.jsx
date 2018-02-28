@@ -54,7 +54,7 @@ class SearchBar extends React.Component {
 		this.state = {
 			isActive: false,
 			searchQuery: '',
-			resultSet: '',
+			resultSet: null,
 			resultsLoading: false,
 			selectedResult: 0,
 		}
@@ -113,6 +113,9 @@ class SearchBar extends React.Component {
 				// ENTER
 				case 13: { 
 					e.preventDefault();
+					
+					window.location.replace(this.state.resultSet[this.state.selectedResult].targetURL);
+
 					this.setState({
 						isActive: false,
 						selectedResult: 0,
@@ -171,8 +174,9 @@ class SearchBar extends React.Component {
 					.then(response => response.json())
 					.then(json => {
 						setTimeout(function() {
+							let formattedResults = self.props.mappingFunction(json)
 							self.setState({
-								resultSet: self.props.mappingFunction(json),
+								resultSet: formattedResults,
 								resultsLoading: false
 							});
 						}, 500);
@@ -208,8 +212,10 @@ class SearchBar extends React.Component {
 					.then(response => response.json())
 					.then(json => {
 						setTimeout(function() {
+							let formattedResults = self.props.mappingFunction(json)
+							console.log(formattedResults)
 							self.setState({
-								resultSet: self.props.mappingFunction(json),
+								resultSet: formattedResults,
 								resultsLoading: false
 							});
 						}, 500);
@@ -252,7 +258,7 @@ class SearchBar extends React.Component {
 		let self = this;
 		let results = [];
 
-		if(this.state.resultSet.length > 0) {
+		if(this.state.resultSet != null) {
 			this.state.resultSet.forEach(function(item, idx) {
 				if(self.props.resultsToDisplay > idx) {
 					let isSelected = ((self.state.selectedResult == idx) ? true : false)
