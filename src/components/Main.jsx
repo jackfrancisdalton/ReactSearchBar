@@ -17,12 +17,15 @@ class SearchResult extends React.Component {
 		// 
 	}
 
+	onClick(event) {
+		this.props.onClick();
+	}
+
 	render() {
 
 		if(this.props.useNavLink) {
 			return (
 				<NavLink to={this.props.targetURL} 
-					onClick={this.props.onClick}
 					title={this.props.title} 
 					onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}
 					className={'search-result' + (this.props.isSelected ? " selected" : "")} >
@@ -35,7 +38,6 @@ class SearchResult extends React.Component {
 		
 		return (
 			<a href={this.props.targetURL} 
-				onClick={this.props.onClick}
 				title={this.props.title} 
 				onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)} 
 				className={'search-result' + (this.props.isSelected ? " selected" : "")} >
@@ -213,7 +215,13 @@ class SearchBar extends React.Component {
 					.then(json => {
 						setTimeout(function() {
 							let formattedResults = self.props.mappingFunction(json)
-							console.log(formattedResults)
+							
+							self.props.queryFormatFunction(
+								self.state.searchQuery,
+								self.props.queryURL,
+								self.props.queryFormatOptions
+							)
+							
 							self.setState({
 								resultSet: formattedResults,
 								resultsLoading: false
@@ -227,7 +235,7 @@ class SearchBar extends React.Component {
 	onResultClicked() {
 		this.timeouts.forEach(clearTimeout);
 		this.setState({
-			isActive: false
+			isActive: false,
 		})
 	}
 
@@ -270,6 +278,7 @@ class SearchBar extends React.Component {
 								imageURL={item.imageURL}
 								onHoverSelect={self.onHoverSetSelected} 
 								isSelected={isSelected}
+								onClick={self.onResultClicked}
 								useNavLink={self.props.useNavLink} 
 								circleImage={self.props.circleImage}/>
 					)
@@ -285,7 +294,6 @@ class SearchBar extends React.Component {
 							onKeyDown={this.handleKeyDown} 
 							onFocus={this.onFocus}
 							onChange={this.onType} 
-							onClick={this.onResultClicked}
 							className='search-input' />
 				</div>
 				{this.state.isActive &&
@@ -309,7 +317,7 @@ class SearchBar extends React.Component {
 	}
 }
 
-let temp = function(queryReturn) {
+let mapperFunction = function(queryReturn) {
 	let formattedObjects = [];
 	
 	queryReturn.forEach(function(item, idx) {
@@ -323,13 +331,27 @@ let temp = function(queryReturn) {
 	return formattedObjects;
 }
 
+let queryFormat = function(searchQuery, queryString, queryFormatOptions) {
+	console.log("query: ", searchQuery)
+	console.log("query string: ", queryString)
+	console.log("options: ", queryFormatOptions)
+}
+
+
 class AppComponent extends React.Component {
   render() {
     return (
       <div className='index'>
         <img src={yeomanImage} alt='Yeoman Generator' />
         <div className='notice'>Please edit <code>src/components/Main.js</code> to get started!</div>
-      	<SearchBar queryURL={"http://localhost:3030/groups"} searchDelay={200} useNavLink={false} circleImage={false} mappingFunction={temp}/>
+      	<SearchBar 
+      		queryURL={"http://localhost:3030/groups"} 
+      		searchDelay={200} 
+      		useNavLink={false} 
+      		circleImage={false}
+  		 	mappingFunction={mapperFunction}
+  		 	queryFormatFunction={queryFormat}
+  		 	queryFormatOptions={{ option1: true, option2: false }} />
       </div>
     );
   }
@@ -344,3 +366,4 @@ export default AppComponent;
 // add support for (has image) + (has subtitle)
 // add support for "mapper function"
 // add option for image/circle image or just text
+// add theme option material theme, bootstrap theme
