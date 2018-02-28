@@ -45,75 +45,6 @@ class SearchResult extends React.Component {
 	}
 }
 
-// class QueryResultBox extends React.Component {
-// 	constructor(props) {
-// 		super(props)
-// 		// show section title
-// 		// section title 
-// 		// section class override
-// 		// number of results desired
-// 		// sort function 
-
-// 		this.state = {
-// 			resultSet: []
-// 		}
-// 	}
-
-// 	componentWillReceiveProps(nextProps) {
-// 		fetch(this.props.fetchURL)
-// 			.then(response => response.json())
-// 			.then(json => {
-// 				this.setState({
-// 					resultSet: json
-// 				})
-// 			})
-// 	}
-
-// 	render() {
-// 		let self = this;
-// 		let resultsDOM = []
-
-// 		if(this.state.resultSet.length) {
-// 			this.state.resultSet.forEach(function(item, idx) {
-// 				if(idx < self.props.numResultsToShow ) {
-// 					resultsDOM.push(<SearchResult title={item.title} />)
-// 				}
-// 			})
-// 		}
-
-// 		return(
-// 			<div className='result-group'>
-// 				<h3>{this.props.title}</h3>
-// 				{resultsDOM}
-// 			</div>
-// 		)
-// 	}
-// }
-
-// class DisplayResultBox extends React.Component {
-// 	constructor(props) {
-// 		super(props)
-// 		// show section title
-// 		// section title 
-// 		// section class override
-// 		// number of results desired
-// 		// sort function 
-// 	}
-
-// 	render() {
-// 		let resultItems = [];
-// 		this.props.resultSet.forEach(function(item, idx) {
-// 			resultItems.push(<SearchResult key={idx} title={item.title} img={item.img} />)
-// 		})
-
-// 		return(
-// 			<div className='result-group'>
-// 				{resultItems}
-// 			</div>
-// 		)
-// 	}
-// }
-
 class SearchBar extends React.Component {
 	constructor(props) {
 		super(props)
@@ -163,6 +94,7 @@ class SearchBar extends React.Component {
 				case 9: { 
 					e.preventDefault();
 					
+					// handle tab when shift is held
 					if(e.shiftKey) {
 						let nextIndex = this.state.selectedResult - 1;
 			    		if(this.state.selectedResult <= 0) { nextIndex = (this.props.resultsToDisplay - 1) }
@@ -237,7 +169,7 @@ class SearchBar extends React.Component {
 					.then(json => {
 						setTimeout(function() {
 							self.setState({
-								resultSet: json,
+								resultSet: self.props.mappingFunction(json),
 								resultsLoading: false
 							});
 						}, 500);
@@ -274,7 +206,7 @@ class SearchBar extends React.Component {
 					.then(json => {
 						setTimeout(function() {
 							self.setState({
-								resultSet: json,
+								resultSet: self.props.mappingFunction(json),
 								resultsLoading: false
 							});
 						}, 500);
@@ -318,6 +250,7 @@ class SearchBar extends React.Component {
 						<SearchResult key={idx} 
 								keyRef={idx} 
 								title={item.title}
+								imageURL={item.imageURL}
 								onHoverSelect={self.onHoverSetSelected} 
 								isSelected={isSelected}
 								useNavLink={self.props.useNavLink} 
@@ -358,13 +291,26 @@ class SearchBar extends React.Component {
 	}
 }
 
+let temp = function(queryReturn) {
+	let formattedObjects = [];
+	
+	queryReturn.forEach(function(item, idx) {
+		let newObject = {};
+		newObject.title = item.username;
+		newObject.imageURL= item.imgURL;
+		formattedObjects.push(newObject);
+	});
+
+	return formattedObjects;
+}
+
 class AppComponent extends React.Component {
   render() {
     return (
       <div className='index'>
         <img src={yeomanImage} alt='Yeoman Generator' />
         <div className='notice'>Please edit <code>src/components/Main.js</code> to get started!</div>
-      	<SearchBar queryURL={"http://localhost:3030/users"} resultsToDisplay={3} searchDelay={200} useNavLink={false} circleImage={false} />
+      	<SearchBar queryURL={"http://localhost:3030/users"} searchDelay={200} useNavLink={false} circleImage={false} mappingFunction={temp}/>
       </div>
     );
   }

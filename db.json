@@ -1,35 +1,35 @@
 {
   "users": [
-    { "title": "Jack", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "James", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Tim", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Tom", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Jerry", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Theo", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Bob", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Harry", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Chris", "imgURL": "https://www.fillmurray.com/100/100" }
+    { "username": "Jack", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "username": "James", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "username": "Tim", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "username": "Tom", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "username": "Jerry", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "username": "Theo", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "username": "Bob", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "username": "Harry", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "username": "Chris", "imgURL": "https://www.fillmurray.com/100/100" }
   ],
   "groups": [
-    { "title": "Jack", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "James", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Tim", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Tom", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Jerry", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Theo", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Bob", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Harry", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Chris", "imgURL": "https://www.fillmurray.com/100/100" }
+    { "group-name": "Jack", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "group-name": "James", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "group-name": "Tim", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "group-name": "Tom", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "group-name": "Jerry", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "group-name": "Theo", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "group-name": "Bob", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "group-name": "Harry", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "group-name": "Chris", "imgURL": "https://www.fillmurray.com/100/100" }
   ],
   "events": [
-    { "title": "Jack", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "James", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Tim", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Tom", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Jerry", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Theo", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Bob", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Harry", "imgURL": "https://www.fillmurray.com/100/100" },
-    { "title": "Chris", "imgURL": "https://www.fillmurray.com/100/100" }
+    { "event-name": "Jack", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "event-name": "James", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "event-name": "Tim", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "event-name": "Tom", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "event-name": "Jerry", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "event-name": "Theo", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "event-name": "Bob", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "event-name": "Harry", "imgURL": "https://www.fillmurray.com/100/100" },
+    { "event-name": "Chris", "imgURL": "https://www.fillmurray.com/100/100" }
   ]
 }
