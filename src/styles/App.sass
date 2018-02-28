@@ -84,15 +84,19 @@ body
                     background: rgb(9, 134, 196)
 
                     .info-container
-                        color: white
+                        .result-title
+                            color: white
 
 
                 .image-container
-                    flex-grow: 1
-                    width: 25%
+                    display: inline-block
                     box-sizing: border-box
+                    width: $resultHeight
                     height: $resultHeight
-                    
+
+                    &.circle-image 
+                        border-radius: 50%
+                        overflow: hidden                        
 
                     .result-image
                         width: 100%
@@ -101,17 +105,15 @@ body
                         padding: 0
 
                 .info-container
-                    flex-grow: 4
-                    height: 50px
-                    width: 75%
-                    height: $resultHeight;
+                    height: $resultHeight
+                    line-height: $resultHeight
+                    display: inline-block
                     box-sizing: border-box
                     padding: 0
                     margin: 0
 
                     .result-title
                         color: black
-                        line-height: $resultHeight
                         padding-left: 10px 
 
 

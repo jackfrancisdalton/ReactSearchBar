@@ -19,24 +19,27 @@ class SearchResult extends React.Component {
 
 	render() {
 
-		let contents = (
-			<div>
-				<div className='image-container'><img className='result-image' src={"http://via.placeholder.com/200x200"}/></div>
-				<div className='info-container'><div className='result-title'>{this.props.title}</div></div>
-			</div>
-		)
-
 		if(this.props.useNavLink) {
 			return (
-				<NavLink to="#" title={this.props.title} onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)} className={'search-result' + (this.props.isSelected ? " selected" : "")} >
-					{contents}
+				<NavLink to="#" 
+					title={this.props.title} 
+					onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}
+					className={'search-result' + (this.props.isSelected ? " selected" : "")} >
+
+					<div className={'image-container' + (this.props.circleImage ? " circle-image" : "")}><img className='result-image' src={"https://www.fillmurray.com/100/100"}/></div>
+					<div className='info-container'><div className='result-title'>{this.props.title}</div></div>
 				</NavLink>
 			)
 		}
 		
 		return (
-			<a href="#" title={this.props.title} onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)} className={'search-result' + (this.props.isSelected ? " selected" : "")} >
-				{contents}
+			<a href="#" 
+				title={this.props.title} 
+				onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)} 
+				className={'search-result' + (this.props.isSelected ? " selected" : "")} >
+
+				<div className={'image-container' + (this.props.circleImage ? " circle-image" : "")}><img className='result-image' src={"https://www.fillmurray.com/100/100"}/></div>
+				<div className='info-container'><div className='result-title'>{this.props.title}</div></div>
 			</a>
 		)
 	}
@@ -131,7 +134,10 @@ class SearchBar extends React.Component {
 	}
 
 	static defaultProps = {
-	  useNavLink: false
+	  useNavLink: false,
+	  circularImage: false,
+	  searchDelay: 100,
+	  resultsToDisplay: 6
 	};
 
 	componentWillMount() {
@@ -274,7 +280,8 @@ class SearchBar extends React.Component {
 								title={item.title}
 								onHoverSelect={self.onHoverSetSelected} 
 								isSelected={isSelected}
-								useNavLink={self.props.useNavLink} />
+								useNavLink={self.props.useNavLink} 
+								circleImage={self.props.circleImage}/>
 					)
 				}
 			})
@@ -312,14 +319,11 @@ class AppComponent extends React.Component {
       <div className='index'>
         <img src={yeomanImage} alt='Yeoman Generator' />
         <div className='notice'>Please edit <code>src/components/Main.js</code> to get started!</div>
-      	<SearchBar queryURL={"http://localhost:3030/users"} resultsToDisplay={3} searchDelay={200} useNavLink={false}/>
+      	<SearchBar queryURL={"http://localhost:3030/users"} resultsToDisplay={3} searchDelay={200} useNavLink={false} circleImage={false} />
       </div>
     );
   }
 }
-
-
-AppComponent.defaultProps = { };
 
 export default AppComponent;
 
@@ -327,6 +331,6 @@ export default AppComponent;
 
 //TODO
 // add support for class overrides
-// add support for navlink option
 // add support for (has image) + (has subtitle)
 // add support for "mapper function"
+// add option for image/circle image or just text
