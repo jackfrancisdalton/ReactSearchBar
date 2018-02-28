@@ -49,6 +49,21 @@ class SearchResult extends React.Component {
 	}
 }
 
+class BasicSearchResult extends React.Component {
+	constructor(props) {
+		super(props)
+	}
+
+	render() {
+		return(
+			<a href={this.props.targetURL} onMouseOver={() => this.props.onHoverSelect(this.props.refKey)}>
+				<div>{this.props.title} - {this.props.isSelected.toString()}</div>
+			</a>
+		)
+	}
+}
+
+
 class SearchBar extends React.Component {
 	constructor(props) {
 		super(props)
@@ -74,7 +89,8 @@ class SearchBar extends React.Component {
 	  useNavLink: false,
 	  circularImage: false,
 	  searchDelay: 100,
-	  resultsToDisplay: 6
+	  resultsToDisplay: 6,
+	  customResultDOMGenerator: null,
 	};
 
 	componentWillMount() {
@@ -176,7 +192,7 @@ class SearchBar extends React.Component {
 					.then(response => response.json())
 					.then(json => {
 						setTimeout(function() {
-							let formattedResults = self.props.mappingFunction(json)
+							let formattedResults = self.props.resultMapFunction(json)
 							self.setState({
 								resultSet: formattedResults,
 								resultsLoading: false
@@ -214,7 +230,7 @@ class SearchBar extends React.Component {
 					.then(response => response.json())
 					.then(json => {
 						setTimeout(function() {
-							let formattedResults = self.props.mappingFunction(json)
+							let formattedResults = self.props.resultMapFunction(json)
 							
 							self.props.queryFormatFunction(
 								self.state.searchQuery,
@@ -266,24 +282,55 @@ class SearchBar extends React.Component {
 		let self = this;
 		let results = [];
 
+		// If results are found
 		if(this.state.resultSet != null) {
-			this.state.resultSet.forEach(function(item, idx) {
-				if(self.props.resultsToDisplay > idx) {
-					let isSelected = ((self.state.selectedResult == idx) ? true : false)
-					results.push(
-						<SearchResult key={idx} 
-								keyRef={idx} 
-								title={item.title}
-								targetURL={item.targetURL}
-								imageURL={item.imageURL}
-								onHoverSelect={self.onHoverSetSelected} 
-								isSelected={isSelected}
-								onClick={self.onResultClicked}
-								useNavLink={self.props.useNavLink} 
-								circleImage={self.props.circleImage}/>
-					)
-				}
-			})
+
+			// if custom result generator found
+			if(!this.props.customResultDOMGenerator) {
+				
+				// loop through results and generate component for each result and assign to results
+				this.state.resultSet.forEach(function(item, idx) {
+
+					// if the current result index is more than the desired amount, do not render a componenet
+					if(self.props.resultsToDisplay > idx) {
+
+						//calculate 
+						let isSelected = ((self.state.selectedResult == idx) ? true : false)
+						results.push(
+							<SearchResult key={idx} 
+									keyRef={idx} 
+									title={item.title}
+									targetURL={item.targetURL}
+									imageURL={item.imageURL}
+									onHoverSelect={self.onHoverSetSelected} 
+									isSelected={isSelected}
+									onClick={self.onResultClicked}
+									useNavLink={self.props.useNavLink} 
+									circleImage={self.props.circleImage}/>
+						)
+					}
+				})
+			} else {
+
+				// loop through results and generate component for each result and assign to results
+				this.state.resultSet.forEach(function(item, idx) {
+					if(self.props.resultsToDisplay > idx) {
+						let isSelected = ((self.state.selectedResult == idx) ? true : false)
+						let customDOMResult = self.props.customResultDOMGenerator(idx, item)
+						
+						// appened extra functions and props
+						customDOMResult = React.cloneElement(customDOMResult,
+							{
+								keyRef: idx,
+								isSelected: isSelected,
+								onHoverSelect: self.onHoverSetSelected
+							}
+						);
+
+						results.push(customDOMResult);
+					}
+				})
+			}
 		}
 
 		return (
@@ -335,6 +382,17 @@ let queryFormat = function(searchQuery, queryString, queryFormatOptions) {
 	console.log("query: ", searchQuery)
 	console.log("query string: ", queryString)
 	console.log("options: ", queryFormatOptions)
+	return queryString;
+}
+
+let customBoxGenerator = function(idx, resultJsonItem) {
+	return(
+		<BasicSearchResult 
+			key={idx} 
+			title={resultJsonItem.title}
+			targetURL={resultJsonItem.targetURL}
+			imageURL={resultJsonItem.imageURL} />
+	)
 }
 
 
@@ -349,7 +407,8 @@ class AppComponent extends React.Component {
       		searchDelay={200} 
       		useNavLink={false} 
       		circleImage={false}
-  		 	mappingFunction={mapperFunction}
+      		customResultDOMGenerator={customBoxGenerator}
+  		 	resultMapFunction={mapperFunction}
   		 	queryFormatFunction={queryFormat}
   		 	queryFormatOptions={{ option1: true, option2: false }} />
       </div>
