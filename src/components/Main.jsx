@@ -56,7 +56,7 @@ class BasicSearchResult extends React.Component {
 
 	render() {
 		return(
-			<a href={this.props.targetURL} onMouseOver={() => this.props.onHoverSelect(this.props.refKey)}>
+			<a href={this.props.targetURL} onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}>
 				<div>{this.props.title} - {this.props.isSelected.toString()}</div>
 			</a>
 		)
@@ -256,7 +256,7 @@ class SearchBar extends React.Component {
 	}
 
 	onHoverSetSelected(newIndex) {
-		
+		console.log("HIT: ", newIndex)
 		// if not loading state, handle highlighting result on mouse hover
 		if(!this.state.resultsLoading) {
 			this.setState({
