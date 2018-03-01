@@ -99,8 +99,42 @@ class SearchBar extends React.Component {
 
 		// Mandatory Porperties
 		searchQueryURL: React.PropTypes.string.isRequired,
-		queryFormatFunction: React.PropTypes.func.isRequired,
-		resultMapFunction: React.PropTypes.func.isRequired,
+		
+		queryFormatFunction: function(props, propName, componentName) {
+			let fn = props[propName];
+			let isFunction = (typeof fn.prototype.constructor !== 'function')
+			let validVariableCount = (fn.prototype.constructor.length !== 3)
+
+			if(!fn.prototype) {
+				throw new Error(propName + " is a required property")
+			}
+
+			if(isFunction) { 
+				return new Error(propName + ' must be a function'); 
+			}
+
+			if(validVariableCount) { 
+				return new Error(propName + ' function must have the 3 arguments: searchQuery(typeof string), queryString(typeof String), queryFormatOptions (typeof Anything)'); 
+			}
+		},
+
+		resultMapFunction: function(props, propName, componentName) {
+			let fn = props[propName];
+			let isFunction = (typeof fn.prototype.constructor !== 'function')
+			let validVariableCount = (fn.prototype.constructor.length !== 1)
+
+			if(!fn.prototype) {
+				throw new Error(propName + " is a required property")
+			}
+
+			if(isFunction) { 
+				return new Error(propName + ' must be a function'); 
+			}
+
+			if(validVariableCount) { 
+				return new Error(propName + ' function must have the argument: queryResultJSON (type of JSON)'); 
+			}
+		},
 			
 		// Optional Properties
 		extraOptions: React.PropTypes.object,
@@ -109,7 +143,22 @@ class SearchBar extends React.Component {
 		maxResultsToDisplay: React.PropTypes.number,
 		searchDelay: React.PropTypes.number,
 		useNavLink: React.PropTypes.bool,
-		customresultDOM: React.PropTypes.function,
+		// customresultDOM: React.PropTypes.function,
+		customResultDOMGenerator: function(props, propName, componentName) {
+			let fn = props[propName];
+			let isFunction = (typeof fn.prototype.constructor !== 'function')
+			let validVariableCount = (fn.prototype.constructor.length !== 2)
+
+			if(isFunction) { 
+				console.log("NOT FUNCTION")
+				return new Error(propName + ' must be a function'); 
+			}
+
+			if(validVariableCount) { 
+				console.log("Wrong argument count")
+				return new Error(propName + ' function must have the 2 arguments: idx (type of Number), resultJsonItem(type of JSON)'); 
+			}
+		}
 	}
 
 	componentWillMount() {
@@ -384,10 +433,10 @@ class SearchBar extends React.Component {
 	}
 }
 
-let mapperFunction = function(queryResult) {
+let mapperFunction = function(queryResultJSON) {
 	let formattedObjects = [];
 	
-	queryResult.forEach(function(item, idx) {
+	queryResultJSON.forEach(function(item, idx) {
 		let newObject = {};
 		newObject.title = item.groupName;
 		newObject.imageURL = item.imgURL;
