@@ -10,7 +10,7 @@ The aim of this package is to give you features out of the box
 
 ### Manditory Props
 
-#### queryurl
+#### queryURL
 The base URL that will fire off when a search is entered, the returns a JSON of results
 
 #### queryFormatFunction
@@ -43,19 +43,27 @@ If you are not using a custom result item layout, then your values are to be ass
 
 ### Optional Props
 
-customresultDOM 
-if you do not want the generic result, create a function with your own dom element
-whatever you create we will appened the properties behind the scenes
-- keyRef a unique identified for 
-- isSelected (will be true on the currently selected result), use this however you want for styling 
-- defaultOnClick (if called from an onclick will use the default
-- onHoverSelect, method for telling the component which object is selected
-	to add simply add the following line to onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}
+#### customresultDOM 
+If you require a custom DOM for your display result you can pass your custom react component into this optional property 
+If you pass a component the search bar will generate an intsance for each result and append three properties to your Component
+* keyRef - integer value represents the index of the result
+* isSelected - a boolean value that is true if the instance is the  currently highlighted, this can be used for applying css classes 
+* onHoverSelect -  a pass function that should be applied to inform the React Search bar when this element is highlighted with a mouse, simply add "onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)" to your component
 
-properties like use circle, show image, use navlink
+#### showImage
+If you are using the built in result display this will toggle displaying an image
 
+#### circleImage
+If you are using the built in result display and `showImage` is true, this will style the image to be a circular image
 
-for thos using react router, and option for using NavLink for client side redirection is there
+#### resultsToDisplay 
+This is an integer value that limits the number of results that should be shown
+
+#### searchDelay 
+To prevent needless search requests, searchDelay will determin how long after typing the searchbar will wait until firing the request
+
+#### useNavLink 
+If you are using ReactRouter, setting this value to true will use NavLink instead of an anchor tag
 
 ### Default Props
 
@@ -68,13 +76,13 @@ default {
 }
 ```
 
-## exposed functions 
-should you want to call functions using your website functions are exposed
-* search (for search button usage)
-* clear box 
-* set box value
-* copy box content value
-* return current selected data set
+## Exposed Functions 
+React Search Bar also exposes functions for integrating with your website.
+* search - 
+* clear box - clears the search box content, and removes the results drop down 
+* set box value - sets the value of the search bar and instantly searches for results
+* copy box content value - 
+* return current selected data set - returns the data for the current list of results
 
 # Support 
 
