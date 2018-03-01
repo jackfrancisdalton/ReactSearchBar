@@ -148,6 +148,102 @@ React Search Bar also exposes functions for integrating with your website.
 
 # Support 
 
+# Complete Examples
+## Generic Result DOM Implementation
+```
+// Function for mapping search query results
+let resultMapperFunc = function(queryResultJSON) {
+	let formattedObjects = [];
+	
+	queryResultJSON.forEach(function(item, idx) {
+		let newObject = {};
+		newObject.title = item.groupName;
+		newObject.imageURL = item.imgURL;
+		newObject.targetURL = item.targetURL; 
+		formattedObjects.push(newObject);
+	});
+
+	return formattedObjects;
+}
+
+// Function for formatting the search query before being sent to server
+let searchQueryFormatter = function(searchQuery, queryString, extraQueryOptions) {
+	return queryString + "?searchterm=" + queryString + "?isMale=" + {extraQueryOptions.onlyMales};
+}
+
+// Your React Application
+class YourReactPageApp extends React.Component {
+  render() {
+    return (
+      <div className='index'>
+        <h1>Welcome to my great website</h1>
+        <h2>Use our search bar to find what you need!</h2>
+      	<SearchBar 
+      		searchQueryURL={"http://www.mywebsite:3000/search-members"} 
+  		 	resultMapFunction={mapperFunction}
+  		 	queryFormatFunction={queryFormat}
+  		 	extraQueryOptions={ {onlyMales: True} } />
+      </div>
+    );
+  }
+}
+```
+
+## Custom Result DOM Implementation
+```
+// Function for mapping search query results
+let resultMapperFunc = function(queryResultJSON) {
+	let formattedObjects = [];
+	
+	queryResultJSON.forEach(function(item, idx) {
+		let newObject = {};
+		newObject.title = item.groupName;
+		newObject.imageURL = item.imgURL;
+		newObject.targetURL = item.targetURL; 
+		formattedObjects.push(newObject);
+	});
+
+	return formattedObjects;
+}
+
+// Function for formatting the search query before being sent to server
+let searchQueryFormatter = function(searchQuery, queryString, extraQueryOptions) {
+	return queryString + "?searchterm=" + queryString + "?isMale=" + {extraQueryOptions.onlyMales};
+}
+
+// Function for creating custom result DOMs
+let customResultDOMGenerator = function(idx, resultJsonItem) {
+	return(
+		<BasicSearchResult 
+			title={resultJsonItem.title}
+			targetURL={resultJsonItem.targetURL}
+			imageURL={resultJsonItem.imageURL} />
+	)
+}
+
+// Your React Application
+class YourReactPageApp extends React.Component {
+  render() {
+    return (
+      <div className='index'>
+        <h1>Welcome to my great website</h1>
+        <h2>Use our search bar to find what you need!</h2>
+      	<SearchBar 
+      		searchQueryURL={"http://www.mywebsite:3000/search-members"} 
+      		searchDelay={200} 
+      		useNavLink={false} 
+      		circleImage={false}
+      		customResultDOMGenerator={customBoxGenerator}
+  		 	resultMapFunction={mapperFunction}
+  		 	extraOptions={ {onlyMales: True} }
+  		 	queryFormatFunction={queryFormat}
+  		 	queryFormatOptions={{ option1: true, option2: false }} />
+      </div>
+    );
+  }
+}
+```
+
 # Style
 ## Themes
 ## Custom Styles

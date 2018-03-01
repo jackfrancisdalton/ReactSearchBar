@@ -99,39 +99,37 @@ class SearchBar extends React.Component {
 
 		// Mandatory Porperties
 		searchQueryURL: React.PropTypes.string.isRequired,
-		
-		queryFormatFunction: function(props, propName, componentName) {
+		searchQueryURLFormatter: function(props, propName, componentName) {
 			let fn = props[propName];
-			let isFunction = (typeof fn.prototype.constructor !== 'function')
-			let validVariableCount = (fn.prototype.constructor.length !== 3)
+			let isFunction = (typeof fn.prototype.constructor === 'function')
+			let validVariableCount = (fn.prototype.constructor.length === 3)
 
 			if(!fn.prototype) {
 				throw new Error(propName + " is a required property")
 			}
 
-			if(isFunction) { 
+			if(!isFunction) { 
 				return new Error(propName + ' must be a function'); 
 			}
 
-			if(validVariableCount) { 
-				return new Error(propName + ' function must have the 3 arguments: searchQuery(typeof string), queryString(typeof String), queryFormatOptions (typeof Anything)'); 
+			if(!validVariableCount) { 
+				return new Error(propName + ' function must have the 3 arguments: searchQuery(typeof string), queryString(typeof String), extraQueryOptions (typeof Anything)'); 
 			}
 		},
-
-		resultMapFunction: function(props, propName, componentName) {
+		searchQueryResultMapper: function(props, propName, componentName) {
 			let fn = props[propName];
-			let isFunction = (typeof fn.prototype.constructor !== 'function')
-			let validVariableCount = (fn.prototype.constructor.length !== 1)
+			let isFunction = (typeof fn.prototype.constructor === 'function')
+			let validVariableCount = (fn.prototype.constructor.length === 1)
 
 			if(!fn.prototype) {
 				throw new Error(propName + " is a required property")
 			}
 
-			if(isFunction) { 
+			if(!isFunction) { 
 				return new Error(propName + ' must be a function'); 
 			}
 
-			if(validVariableCount) { 
+			if(!validVariableCount) { 
 				return new Error(propName + ' function must have the argument: queryResultJSON (type of JSON)'); 
 			}
 		},
@@ -143,19 +141,16 @@ class SearchBar extends React.Component {
 		maxResultsToDisplay: React.PropTypes.number,
 		searchDelay: React.PropTypes.number,
 		useNavLink: React.PropTypes.bool,
-		// customresultDOM: React.PropTypes.function,
 		customResultDOMGenerator: function(props, propName, componentName) {
 			let fn = props[propName];
-			let isFunction = (typeof fn.prototype.constructor !== 'function')
-			let validVariableCount = (fn.prototype.constructor.length !== 2)
+			let isFunction = (typeof fn.prototype.constructor === 'function')
+			let validVariableCount = (fn.prototype.constructor.length === 2)
 
-			if(isFunction) { 
-				console.log("NOT FUNCTION")
+			if(!isFunction) { 
 				return new Error(propName + ' must be a function'); 
 			}
 
-			if(validVariableCount) { 
-				console.log("Wrong argument count")
+			if(!validVariableCount) { 
 				return new Error(propName + ' function must have the 2 arguments: idx (type of Number), resultJsonItem(type of JSON)'); 
 			}
 		}
@@ -254,13 +249,19 @@ class SearchBar extends React.Component {
 			// cancel pending requests
 			this.timeouts.forEach(clearTimeout);
 			
+			let finalSearchURL = this.props.searchQueryURLFormatter(
+				self.props.searchQuery,
+				self.props.searchQueryURL,
+				self.props.extraQueryOptions,
+			)
+
 			// make request based on new searchquery
 			this.timeouts.push(setTimeout(function() {
-	 			fetch(self.props.searchQueryURL)
+	 			fetch(finalSearchURL)
 					.then(response => response.json())
 					.then(json => {
 						setTimeout(function() {
-							let formattedResults = self.props.resultMapFunction(json)
+							let formattedResults = self.props.searchQueryResultMapper(json)
 							self.setState({
 								resultSet: formattedResults,
 								resultsLoading: false
@@ -290,22 +291,22 @@ class SearchBar extends React.Component {
 
 		// cancel pending requests
 		this.timeouts.forEach(clearTimeout);
+
+		let finalSearchURL = this.props.searchQueryURLFormatter(
+			self.props.searchQuery,
+			self.props.searchQueryURL,
+			self.props.extraQueryOptions,
+		)
 		
+		console.log("FINAL: ", finalSearchURL)
 		// make request based on new searchquery
 		this.timeouts.push(setTimeout(function() {
 			if(isActive) {
-	 			fetch(self.props.searchQueryURL)
+	 			fetch(finalSearchURL)
 					.then(response => response.json())
 					.then(json => {
 						setTimeout(function() {
-							let formattedResults = self.props.resultMapFunction(json)
-							
-							self.props.queryFormatFunction(
-								self.state.searchQuery,
-								self.props.searchQueryURL,
-								self.props.queryFormatOptions
-							)
-							
+							let formattedResults = self.props.searchQueryResultMapper(json)
 							self.setState({
 								resultSet: formattedResults,
 								resultsLoading: false
@@ -324,7 +325,6 @@ class SearchBar extends React.Component {
 	}
 
 	onHoverSetSelected(newIndex) {
-		console.log("HIT: ", newIndex)
 		// if not loading state, handle highlighting result on mouse hover
 		if(!this.state.resultsLoading) {
 			this.setState({
@@ -447,11 +447,8 @@ let mapperFunction = function(queryResultJSON) {
 	return formattedObjects;
 }
 
-let queryFormat = function(searchQuery, queryString, queryFormatOptions) {
-	console.log("query: ", searchQuery)
-	console.log("query string: ", queryString)
-	console.log("options: ", queryFormatOptions)
-	return queryString;
+let queryFormat = function(searchQuery, searchQueryURL, extraQueryOptions) {
+	return searchQueryURL;
 }
 
 let customBoxGenerator = function(idx, resultJsonItem) {
@@ -468,17 +465,12 @@ class AppComponent extends React.Component {
   render() {
     return (
       <div className='index'>
-        <img src={yeomanImage} alt='Yeoman Generator' />
-        <div className='notice'>Please edit <code>src/components/Main.js</code> to get started!</div>
       	<SearchBar 
       		searchQueryURL={"http://www.localhost:3030/groups"} 
-      		searchDelay={200} 
-      		useNavLink={false} 
-      		circleImage={false}
       		customResultDOMGenerator={customBoxGenerator}
-  		 	resultMapFunction={mapperFunction}
-  		 	queryFormatFunction={queryFormat}
-  		 	queryFormatOptions={{ option1: true, option2: false }} />
+  		 	searchQueryResultMapper={mapperFunction}
+  		 	searchQueryURLFormatter={queryFormat}
+  		 	extraQueryOptions={{ option1: true, option2: false }} />
       </div>
     );
   }
