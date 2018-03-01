@@ -13,41 +13,26 @@ The following properties must be supplied when calling React Search Bar
 
 | Property | Type | Descriptin |
 | -------- | ---- | ---------- |
-| searchQueryURL | String | This is the base URL your search query will target, eg "http://wwww.mysite.com/search" |
-| queryFormatFunction | function(searchQuery, baseQueryURL, extraOptions) | This function is for formatting the structure of your search query before sending the request. It supplies the baseQueryURL, the searchQuery (string in the search box), and extraOptions. extraOptions is an argument that can be optionally passed into RSB to format the searchQuery |
-| resultMapFunction | function(queryResult) | This function supplies the search query result as an argument, and maps it to a JSON object that is then passed to the result |
- 
+| searchQueryURL | String | The base URL your search query will target, eg "http://wwww.mysite.com/search" |
+| searchQueryURLFormatter | function(searchQuery, baseQueryURL, extraOptions) | Formatting the structure of your search query before sending the request. It supplies the searchQueryURL, the searchQuery (string in the search box), and extraOptions (any value passed in through the extraOptions optional property field). |
+| resultMapper | function(queryResult) | 
+	A function that takes the returned result form the search query request. It is given the returned JSON from the request as its only argument.
+	```
+	let mapperFunction = function(queryReturn) {
+		let formattedObjects = [];
+		
+		queryReturn.forEach(function(item, idx) {
+			let newObject = {};
+			newObject.title = item.myObjectField_A;
+			newObject.imageURL = item.myObjectField_B;
+			newObject.targetURL = item.myObjectField1_C; 
+			formattedObjects.push(newObject);
+		});
 
-#### queryURL
-The base URL that will fire off when a search is entered, the returns a JSON of results
-
-#### queryFormatFunction
-A function that is given the selected item data as an arugment, and formats the query to be fired off based on that
-```
-let quertFormat = function(searchQuery, queryString, queryFormatOptions) {
-	return queryString + "?searchTerm=" + searchQuery
-}
-```
-
-#### resultMapFunction
-A function that takes the returned result form the search query request. It is given the returned JSON from the request as its only argument.
-```
-let mapperFunction = function(queryReturn) {
-	let formattedObjects = [];
-	
-	queryReturn.forEach(function(item, idx) {
-		let newObject = {};
-		newObject.title = item.myObjectField_A;
-		newObject.imageURL = item.myObjectField_B;
-		newObject.targetURL = item.myObjectField1_C; 
-		formattedObjects.push(newObject);
-	});
-
-	return formattedObjects;
-}
-```
-If you are not using a custom result item layout, then your values are to be assigned to title, imageURL, targetURL
-
+		return formattedObjects;
+	}
+	```
+|
 
 ### Optional Props
 The following properties are not required, but allow you to configure the component to meet your applications needs.

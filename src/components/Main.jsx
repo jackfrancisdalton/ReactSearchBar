@@ -116,7 +116,7 @@ class SearchBar extends React.Component {
 				return new Error(propName + ' function must have the 3 arguments: searchQuery(typeof string), queryString(typeof String), extraQueryOptions (typeof Anything)'); 
 			}
 		},
-		searchQueryResultMapper: function(props, propName, componentName) {
+		resultMapper: function(props, propName, componentName) {
 			let fn = props[propName];
 			let isFunction = (typeof fn.prototype.constructor === 'function')
 			let validVariableCount = (fn.prototype.constructor.length === 1)
@@ -194,7 +194,8 @@ class SearchBar extends React.Component {
 				// ENTER
 				case 13: { 
 					e.preventDefault();
-					
+
+					// Go to the target URL of the result
 					window.location.replace(this.state.resultSet[this.state.selectedResult].targetURL);
 
 					this.setState({
@@ -261,7 +262,7 @@ class SearchBar extends React.Component {
 					.then(response => response.json())
 					.then(json => {
 						setTimeout(function() {
-							let formattedResults = self.props.searchQueryResultMapper(json)
+							let formattedResults = self.props.resultMapper(json)
 							self.setState({
 								resultSet: formattedResults,
 								resultsLoading: false
@@ -292,13 +293,13 @@ class SearchBar extends React.Component {
 		// cancel pending requests
 		this.timeouts.forEach(clearTimeout);
 
+		// formats the search query URL
 		let finalSearchURL = this.props.searchQueryURLFormatter(
 			self.props.searchQuery,
 			self.props.searchQueryURL,
 			self.props.extraQueryOptions,
 		)
 		
-		console.log("FINAL: ", finalSearchURL)
 		// make request based on new searchquery
 		this.timeouts.push(setTimeout(function() {
 			if(isActive) {
@@ -306,7 +307,7 @@ class SearchBar extends React.Component {
 					.then(response => response.json())
 					.then(json => {
 						setTimeout(function() {
-							let formattedResults = self.props.searchQueryResultMapper(json)
+							let formattedResults = self.props.resultMapper(json)
 							self.setState({
 								resultSet: formattedResults,
 								resultsLoading: false
@@ -468,7 +469,7 @@ class AppComponent extends React.Component {
       	<SearchBar 
       		searchQueryURL={"http://www.localhost:3030/groups"} 
       		customResultDOMGenerator={customBoxGenerator}
-  		 	searchQueryResultMapper={mapperFunction}
+  		 	resultMapper={mapperFunction}
   		 	searchQueryURLFormatter={queryFormat}
   		 	extraQueryOptions={{ option1: true, option2: false }} />
       </div>
