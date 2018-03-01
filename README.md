@@ -9,6 +9,7 @@ The aim of this package is to give you features out of the box
 ## Properties
 
 ### Manditory Props
+The following properties must be supplied when calling React Search Bar
 
 #### queryURL
 The base URL that will fire off when a search is entered, the returns a JSON of results
@@ -42,6 +43,7 @@ If you are not using a custom result item layout, then your values are to be ass
 
 
 ### Optional Props
+The following properties are not required, but allow you to configure the component to meet your applications needs.
 
 #### customresultDOM 
 If you require a custom DOM for your display result you can pass your custom react component into this optional property 
@@ -49,6 +51,8 @@ If you pass a component the search bar will generate an intsance for each result
 * keyRef - integer value represents the index of the result
 * isSelected - a boolean value that is true if the instance is the  currently highlighted, this can be used for applying css classes 
 * onHoverSelect -  a pass function that should be applied to inform the React Search bar when this element is highlighted with a mouse, simply add "onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)" to your component
+
+Mouse highlighting, keyboard navigation (including going to the targetURL on enter pressed) will be mapped for you
 
 #### showImage
 If you are using the built in result display this will toggle displaying an image
@@ -66,6 +70,7 @@ To prevent needless search requests, searchDelay will determin how long after ty
 If you are using ReactRouter, setting this value to true will use NavLink instead of an anchor tag
 
 ### Default Props
+If no optional properties are supplied to the search component, the default values will be as follows:
 
 ```
 default {
