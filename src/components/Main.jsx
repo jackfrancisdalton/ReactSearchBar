@@ -91,7 +91,7 @@ class SearchBar extends React.Component {
 	  circularImage: false,
 	  searchDelay: 100,
 	  resultsToDisplay: 6,
-	  customResultDOMGenerator: null,
+	  customResultComponentGenerator: null,
 	};
 
 	// Property Validation
@@ -141,7 +141,7 @@ class SearchBar extends React.Component {
 		maxResultsToDisplay: React.PropTypes.number,
 		searchDelay: React.PropTypes.number,
 		useNavLink: React.PropTypes.bool,
-		customResultDOMGenerator: function(props, propName, componentName) {
+		customResultComponentGenerator: function(props, propName, componentName) {
 			let fn = props[propName];
 			let isFunction = (typeof fn.prototype.constructor === 'function')
 			let validVariableCount = (fn.prototype.constructor.length === 2)
@@ -355,7 +355,7 @@ class SearchBar extends React.Component {
 		if(this.state.resultSet != null) {
 
 			// if custom result generator found
-			if(!this.props.customResultDOMGenerator) {
+			if(!this.props.customResultComponentGenerator) {
 				
 				// loop through results and generate component for each result and assign to results
 				this.state.resultSet.forEach(function(item, idx) {
@@ -385,7 +385,7 @@ class SearchBar extends React.Component {
 				this.state.resultSet.forEach(function(item, idx) {
 					if(self.props.resultsToDisplay > idx) {
 						let isSelected = ((self.state.selectedResult == idx) ? true : false)
-						let customDOMResult = self.props.customResultDOMGenerator(idx, item)
+						let customDOMResult = self.props.customResultComponentGenerator(idx, item)
 						
 						// appened extra functions and props
 						customDOMResult = React.cloneElement(customDOMResult,
@@ -468,7 +468,7 @@ class AppComponent extends React.Component {
       <div className='index'>
       	<SearchBar 
       		searchQueryURL={"http://www.localhost:3030/groups"} 
-      		customResultDOMGenerator={customBoxGenerator}
+      		customResultComponentGenerator={customBoxGenerator}
   		 	resultMapper={mapperFunction}
   		 	searchQueryURLFormatter={queryFormat}
   		 	extraQueryOptions={{ option1: true, option2: false }} />
