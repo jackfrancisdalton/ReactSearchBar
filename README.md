@@ -45,6 +45,11 @@ If you are not using a custom result item layout, then your values are to be ass
 ### Optional Props
 The following properties are not required, but allow you to configure the component to meet your applications needs.
 
+
+| Property | Type | Description |
+| -------- | ---- | ----------- |
+| customresultDOM | function | generate custom react result dom |
+
 #### customresultDOM 
 If you require a custom DOM for your display result you can pass your custom react component into this optional property 
 If you pass a component the search bar will generate an intsance for each result and append three properties to your Component
