@@ -321,6 +321,7 @@ class SearchBar extends React.Component {
 						// appened extra functions and props
 						customDOMResult = React.cloneElement(customDOMResult,
 							{
+								key: idx,
 								keyRef: idx,
 								isSelected: isSelected,
 								onHoverSelect: self.onHoverSetSelected
@@ -364,10 +365,10 @@ class SearchBar extends React.Component {
 	}
 }
 
-let mapperFunction = function(queryReturn) {
+let mapperFunction = function(queryResult) {
 	let formattedObjects = [];
 	
-	queryReturn.forEach(function(item, idx) {
+	queryResult.forEach(function(item, idx) {
 		let newObject = {};
 		newObject.title = item.groupName;
 		newObject.imageURL = item.imgURL;
@@ -388,7 +389,6 @@ let queryFormat = function(searchQuery, queryString, queryFormatOptions) {
 let customBoxGenerator = function(idx, resultJsonItem) {
 	return(
 		<BasicSearchResult 
-			key={idx} 
 			title={resultJsonItem.title}
 			targetURL={resultJsonItem.targetURL}
 			imageURL={resultJsonItem.imageURL} />
