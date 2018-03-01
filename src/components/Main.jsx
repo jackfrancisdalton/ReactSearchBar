@@ -85,6 +85,7 @@ class SearchBar extends React.Component {
 		this.handleClickOutside = this.handleClickOutside.bind(this)
 	}
 
+	// Set default values
 	static defaultProps = {
 	  useNavLink: false,
 	  circularImage: false,
@@ -92,6 +93,24 @@ class SearchBar extends React.Component {
 	  resultsToDisplay: 6,
 	  customResultDOMGenerator: null,
 	};
+
+	// Property Validation
+	static propTypes = {
+
+		// Mandatory Porperties
+		searchQueryURL: React.PropTypes.string.isRequired,
+		queryFormatFunction: React.PropTypes.func.isRequired,
+		resultMapFunction: React.PropTypes.func.isRequired,
+			
+		// Optional Properties
+		extraOptions: React.PropTypes.object,
+		showImage: React.PropTypes.bool,
+		circleImage: React.PropTypes.bool,
+		maxResultsToDisplay: React.PropTypes.number,
+		searchDelay: React.PropTypes.number,
+		useNavLink: React.PropTypes.bool,
+		customresultDOM: React.PropTypes.function,
+	}
 
 	componentWillMount() {
 		this.timeouts = [];
@@ -188,7 +207,7 @@ class SearchBar extends React.Component {
 			
 			// make request based on new searchquery
 			this.timeouts.push(setTimeout(function() {
-	 			fetch(self.props.queryURL)
+	 			fetch(self.props.searchQueryURL)
 					.then(response => response.json())
 					.then(json => {
 						setTimeout(function() {
@@ -226,7 +245,7 @@ class SearchBar extends React.Component {
 		// make request based on new searchquery
 		this.timeouts.push(setTimeout(function() {
 			if(isActive) {
-	 			fetch(self.props.queryURL)
+	 			fetch(self.props.searchQueryURL)
 					.then(response => response.json())
 					.then(json => {
 						setTimeout(function() {
@@ -234,7 +253,7 @@ class SearchBar extends React.Component {
 							
 							self.props.queryFormatFunction(
 								self.state.searchQuery,
-								self.props.queryURL,
+								self.props.searchQueryURL,
 								self.props.queryFormatOptions
 							)
 							
@@ -403,7 +422,7 @@ class AppComponent extends React.Component {
         <img src={yeomanImage} alt='Yeoman Generator' />
         <div className='notice'>Please edit <code>src/components/Main.js</code> to get started!</div>
       	<SearchBar 
-      		queryURL={"http://localhost:3030/groups"} 
+      		searchQueryURL={"http://www.localhost:3030/groups"} 
       		searchDelay={200} 
       		useNavLink={false} 
       		circleImage={false}

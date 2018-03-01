@@ -13,7 +13,7 @@ The following properties must be supplied when calling React Search Bar
 
 | Property | Type | Descriptin |
 | -------- | ---- | ---------- |
-| baseQueryURL | String | This is the base URL your search query will target, eg "http://wwww.mysite.com/search" |
+| searchQueryURL | String | This is the base URL your search query will target, eg "http://wwww.mysite.com/search" |
 | queryFormatFunction | function(searchQuery, baseQueryURL, extraOptions) | This function is for formatting the structure of your search query before sending the request. It supplies the baseQueryURL, the searchQuery (string in the search box), and extraOptions. extraOptions is an argument that can be optionally passed into RSB to format the searchQuery |
 | resultMapFunction | function(queryResult) | This function supplies the search query result as an argument, and maps it to a JSON object that is then passed to the result |
  
