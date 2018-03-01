@@ -4,18 +4,18 @@ generic search bar components
 The aim of this package is to give you features out of the box
 * deferred query firing while typing
 * keyboard and mouse result selection 
-* 
+* ReactRouter support
 
 ## Properties
 
 ### Manditory Props
-The following properties must be supplied when using React Search Bar
+The following properties must be supplied when implementing React Search Bar
 
 | Property | Type | Descriptin |
 | -------- | ---- | ---------- |
-| searchQueryURL | String | The base URL your search query will target, eg "http://wwww.mysite.com/search" |
-| searchQueryURLFormatter | function | Takes the searchQueryURL, searchQuery and extraOptions and returns the final query that will be requested  |
-| resultMapper | function | Takes the returned JSON from the server, and maps values to keys corrisponding to a result instance |
+| *searchQueryURL* | **String** | The base URL your search query will target, eg "http://wwww.mysite.com/search" |
+| *searchQueryURLFormatter* | **function** | returns the final string URL that is sent to the server to request search results  |
+| *resultMapper* | **function** | Takes the returned JSON from the server, and returns an object with values mapped to property names corresponding to the result component |
 
 #### searchQueryURLFormatter Implementation
 The searchQueryURLFormatter function is required to take 3 arguments:
@@ -28,11 +28,17 @@ let searchQueryURLFormatter = function(searchQuery, searchQueryURL, extraQueryOp
 	return searchQueryURL + "?searchterm=" + searchQuery + "?isMale=" + {extraQueryOptions.onlyMales};
 }
 ```
-The value returned from this function will be used to fetch the relevent results from the server.
+The value returned from this function will be used to as the URL that fetches results from the server. There is no limitation on the structure of the returned string value.
 
 #### resultMapper Implementation
 The resultMapper function is required to take 1 argument:
 * qeuryResult : the JSON result returned from the server
+
+The values you wish to display must be mapped to:
+* title : the main text displayed in the result 
+* imageURL : the url of the image to be displayed in the result box
+* targetURL : the url to be navigated to when the result is clicked/enter key is hit
+
 
 ```
 let resultMapper = function(qeuryResult) {
@@ -48,22 +54,21 @@ let resultMapper = function(qeuryResult) {
 
 	return formattedObjects;
 }
-	```
-IMPORTANT: in this example the values are mapped to : title, imageURL, targetURL. If you are not using `customresultDOM` you must map to these values.
-
+```
+*IMPORTANT*: in this example the values are mapped to properties for the out-of-box result component. If you are using `customResultComponentGenerator` please see the explination [here](#### customResultComponentGenerator), for configuring resultMapper for custom result components.
 
 ### Optional Props
 The following properties are not required, but allow you to configure the component to meet your application's needs.
 
 | Property | Type | Description |
 | -------- | ---- | ----------- |
-| extraOptions | Object | This object will be passed to your query format function. The intention is to allow external componenets to configure the search. For example if you create a filter box, you can pass a JSON object of { isFree: true }, and appened that value to the search query before it is fired |
-| showImage | Boolean | If set to `true` the search results will display a square image on the far left
-| circleImage | Boolean | If `showImage` is true, you can make the image a circle by setting this property to true
-| maxResultsToDisplay | Integer | The maximum number of results displayed on search
-| searchDelay | Integer | The period of time of inaction before a search query fires. As the box searches on type, this property prevents a search being fired for every letter entered, lowering the number of server requests.
-| useNavLink | Boolean | If you are using ReactRouter thus require links to be `<NavLink>` instead of `<a>` tag set this variable to true.
-| customResultComponentGenerator | function | If you do not want to use the in built result component , you can pass a function that returns your own React Component to the RSB to use as the result component instead. |
+| *extraOptions* | **Any** | This object will be passed to your query format function. The intention is to allow external componenets to configure the search. For example if you create a filter box, you can pass a JSON object of { isFree: true }, and appened that value to the search query before it is fired |
+| *showImage* | **Boolean** | If set to `true` the search results will display a square image on the far left
+| *circleImage* | **Boolean** | If `showImage` is true, you can make the image a circle by setting this property to true
+| *maxResultsToDisplay* | Integer | The maximum number of results displayed on search
+| *searchDelay* | **Integer** | The period of time of inaction before a search query fires. As the box searches on type, this property prevents a search being fired for every letter entered, lowering the number of server requests.
+| *useNavLink* | **Boolean** | If you are using ReactRouter thus require links to be `<NavLink>` instead of `<a>` tag set this variable to true.
+| *customResultComponentGenerator* | **function** | If you do not want to use the in built result component , you can pass a function that returns your own React Component to the RSB to use as the result component instead. |
 
 
 #### customResultComponentGenerator 
@@ -89,9 +94,9 @@ let customResultComponentGenerator = function(idx, resultJsonItem) {
 Thirdly RSB will append (and handle) the following properties to your custom react component :
 | Property | Type | Description |
 | -------- | ---- | ----------- |
-| keyRef | Integer | The index number of the result |
-| isSelected | Boolean | This value returns true if the relevent result is currently selected |
-| onHoverSelect | function | Call this function, passing the keyRef to inform RSB that the current item is to be set as the selected result. (required for mouse selection, however keyboard navigation will work without) |
+| *keyRef* | **Integer** | The index number of the result |
+| *isSelected* | **Boolean** | This value returns true if the relevent result is currently selected |
+| *onHoverSelect* | **function** | Call this function, passing the keyRef to inform RSB that the current item is to be set as the selected result. (required for mouse selection, however keyboard navigation will work without) |
 
 An example of a correctly configured custom result box component is as follows:
 ```
@@ -151,10 +156,9 @@ React Search Bar also exposes functions for integrating with your website.
 # Support 
 
 # Complete Examples
-## Generic Result DOM Implementation
+## Out-of-Box Result Implementation
 ```
-// Function for mapping search query results
-let resultMapperFunc = function(queryResultJSON) {
+let resultMapper = function(queryResultJSON) {
 	let formattedObjects = [];
 	
 	queryResultJSON.forEach(function(item, idx) {
@@ -168,53 +172,47 @@ let resultMapperFunc = function(queryResultJSON) {
 	return formattedObjects;
 }
 
-// Function for formatting the search query before being sent to server
-let searchQueryFormatter = function(searchQuery, queryString, extraQueryOptions) {
-	return queryString + "?searchterm=" + queryString + "?isMale=" + {extraQueryOptions.onlyMales};
+let searchQueryURLFormatter = function(searchQuery, searchQueryURL, extraQueryOptions) {
+	return searchQueryURL + "?searchterm=" + searchQuery" + "?isMale=" + extraQueryOptions.isMale;
 }
 
-// Your React Application
-class YourReactPageApp extends React.Component {
+class YourApplication extends React.Component {
   render() {
     return (
-      <div className='index'>
-        <h1>Welcome to my great website</h1>
-        <h2>Use our search bar to find what you need!</h2>
+      <div >
+      	<h1>Welcome to my website!</h1>
+      	<h2>Check out my facy search bar.</h2>
       	<SearchBar 
-      		searchQueryURL={"http://www.mywebsite:3000/search-members"} 
-  		 	resultMapFunction={mapperFunction}
-  		 	queryFormatFunction={queryFormat}
-  		 	extraQueryOptions={ {onlyMales: True} } />
+      		searchQueryURL={"http://www.yourwebsite.com/search"} 
+  		 	resultMapper={resultMapper}
+  		 	searchQueryURLFormatter={searchQueryURLFormatter}
+  		 	extraQueryOptions={{ isMale: true, isEmployed: false }} />
       </div>
     );
   }
 }
 ```
 
-## Custom Result DOM Implementation
+## Custom Result Implementation
 ```
-// Function for mapping search query results
-let resultMapperFunc = function(queryResultJSON) {
-	let formattedObjects = [];
-	
-	queryResultJSON.forEach(function(item, idx) {
-		let newObject = {};
-		newObject.title = item.groupName;
-		newObject.imageURL = item.imgURL;
-		newObject.targetURL = item.targetURL; 
-		formattedObjects.push(newObject);
-	});
 
-	return formattedObjects;
+class CustomResultBox extends React.Component {
+	constructor(props) {
+		super(props)
+	}
+
+	render() {
+		return(
+			<a href={this.props.targetURL} onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}>
+				<img src={this.props.profileImageURL} />
+				<div className={this.props.isSelected ? " selected" : ""}>{this.props.personName}}</div>
+				<div>{this.props.DoB}}</div>
+			</a>
+		)
+	}
 }
 
-// Function for formatting the search query before being sent to server
-let searchQueryFormatter = function(searchQuery, queryString, extraQueryOptions) {
-	return queryString + "?searchterm=" + queryString + "?isMale=" + {extraQueryOptions.onlyMales};
-}
-
-// Function for creating custom result DOMs
-let customResultDOMGenerator = function(idx, resultJsonItem) {
+let customBoxGenerator = function(idx, resultJsonItem) {
 	return(
 		<BasicSearchResult 
 			title={resultJsonItem.title}
@@ -223,23 +221,38 @@ let customResultDOMGenerator = function(idx, resultJsonItem) {
 	)
 }
 
-// Your React Application
-class YourReactPageApp extends React.Component {
+// Function for mapping search query results
+let mapperFunction = function(queryResultJSON) {
+	let formattedObjects = [];
+	
+	queryResultJSON.forEach(function(item, idx) {
+		let newObject = {};
+		newObject.personName = item.name;
+		newObject.subTitle = item.DoB.toString();
+		newObject.targetURL = item.targetURL;
+		newObject.profileImageURL = item.imageURL; 
+		formattedObjects.push(newObject);
+	});
+
+	return formattedObjects;
+}
+
+let searchQueryURLFormatter = function(searchQuery, searchQueryURL, extraQueryOptions) {
+	return searchQueryURL + "?searchterm=" + searchQuery" + "?isMale=" + extraQueryOptions.isMale;
+}
+
+class YourApplication extends React.Component {
   render() {
     return (
-      <div className='index'>
-        <h1>Welcome to my great website</h1>
-        <h2>Use our search bar to find what you need!</h2>
+      <div >
+      	<h1>Welcome to my website!</h1>
+      	<h2>Check out my facy search bar.</h2>
       	<SearchBar 
-      		searchQueryURL={"http://www.mywebsite:3000/search-members"} 
-      		searchDelay={200} 
-      		useNavLink={false} 
-      		circleImage={false}
-      		customResultDOMGenerator={customBoxGenerator}
-  		 	resultMapFunction={mapperFunction}
-  		 	extraOptions={ {onlyMales: True} }
-  		 	queryFormatFunction={queryFormat}
-  		 	queryFormatOptions={{ option1: true, option2: false }} />
+      		searchQueryURL={"http://www.yourwebsite.com/search"} 
+  		 	resultMapper={resultMapper}
+  		 	searchQueryURLFormatter={searchQueryURLFormatter}
+  		 	extraQueryOptions={{ isMale: true, isEmployed: false }} 
+      		customResultComponentGenerator={CustomResultBox} />
       </div>
     );
   }
