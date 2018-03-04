@@ -1,4 +1,6 @@
-/* Base Application Styles */
+@import './animations.sass'
+
+
 body
     color: #fff
     background: #222
@@ -18,6 +20,17 @@ body
 
 
 
+@keyframes rotation
+    0%
+        transform: rotate(0deg)
+    25%
+        transform: rotate(90deg)
+    50%
+        transform: rotate(150deg)
+    70%
+        transform: rotate(280deg)
+    100%
+        transform: rotate(360deg)
 
 .search-bar-container
     width: 300px
@@ -36,7 +49,6 @@ body
             box-sizing: border-box
             width: 100%
 
-
     .drop-down-container
         // padding: 10px
         box-sizing: border-box
@@ -46,23 +58,49 @@ body
         left: 0
         width: 100%
 
+        .no-result-container
+            .no-results-message
+                padding: 10px
+                box-sizing: border-box
+                color: #000
+
         .drop-down
             background: white
             position: relative
 
             .loading-results-cover
                 width: 100%
-                height: 100%
-                position: absolute
-                top: 0
-                left: 0
-                background: rgba(255, 255, 255, 0.7)
+                height: 200px
+                // position: absolute
+                // top: 0
+                // left: 0
+                display: block
+                background: rgba(255, 255, 255, 1)
 
-                .loading-result-message
-                    color: black
-                    position: relative;
-                    top: 50%
-                    left: 50%
+                .position-container
+                    display: table
+                    width: 100%
+                    height: 100%
+
+                    .positioner
+                        width: 100%
+                        height: 100%
+                        display: table-cell
+                        vertical-align: middle
+                        text-align: center
+                        color: black
+
+                        .loading-animation
+                            display: inline-block
+                            width: 40px
+                            height: 40px
+                            border-radius: 50%
+                            animation: 1s linear rotation infinite
+                            box-shadow: 0px 0px 18px -2px rgba(0,0,0,0.77)
+                            border: 5px solid rgba(0,0,0, 0.2)
+                            border-top: 5px solid rgba(0,0,0, 1)
+
+
 
 
             $resultHeight: 50px;

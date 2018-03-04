@@ -5,6 +5,17 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 let yeomanImage = require('../images/yeoman.png');
 
+
+class NoResult extends React.Component {
+	render() {
+		return(
+			<div className="no-result-container">
+				<div className="no-results-message">{this.props.message}</div>
+			</div>
+		)
+	}
+}
+
 class SearchResult extends React.Component {
 	constructor(props) {
 		super(props)
@@ -92,6 +103,7 @@ class SearchBar extends React.Component {
 	  searchDelay: 100,
 	  resultsToDisplay: 6,
 	  customResultComponentGenerator: null,
+	  errorMessage: "No Results Found",
 	};
 
 	// Property Validation
@@ -141,6 +153,7 @@ class SearchBar extends React.Component {
 		maxResultsToDisplay: React.PropTypes.number,
 		searchDelay: React.PropTypes.number,
 		useNavLink: React.PropTypes.bool,
+		errorMessage: React.PropTypes.string,
 		customResultComponentGenerator: function(props, propName, componentName) {
 			let fn = props[propName];
 			let isFunction = (typeof fn.prototype.constructor === 'function')
@@ -261,13 +274,12 @@ class SearchBar extends React.Component {
 	 			fetch(finalSearchURL)
 					.then(response => response.json())
 					.then(json => {
-						setTimeout(function() {
-							let formattedResults = self.props.resultMapper(json)
-							self.setState({
-								resultSet: formattedResults,
-								resultsLoading: false
-							});
-						}, 500);
+						let formattedResults = self.props.resultMapper(json)
+
+						self.setState({
+							resultSet: formattedResults,
+							resultsLoading: false
+						});
 					})	
 			}, self.props.searchDelay));
 		}
@@ -306,13 +318,12 @@ class SearchBar extends React.Component {
 	 			fetch(finalSearchURL)
 					.then(response => response.json())
 					.then(json => {
-						setTimeout(function() {
-							let formattedResults = self.props.resultMapper(json)
-							self.setState({
-								resultSet: formattedResults,
-								resultsLoading: false
-							});
-						}, 500);
+						let formattedResults = self.props.resultMapper(json)
+
+						self.setState({
+							resultSet: formattedResults,
+							resultsLoading: false
+						});
 					})	
 			}
 		}, self.props.searchDelay));	
@@ -403,6 +414,15 @@ class SearchBar extends React.Component {
 			}
 		}
 
+		console.log(results)
+
+		if(results != null) {
+			if(results.length <= 0 && !this.state.resultsLoading) {
+				results = (<NoResult message={this.props.errorMessage} />)
+			}
+		}
+		
+
 		return (
 			<div className='search-bar-container' ref={this.setWrapperRef}>
 				<div className='search-input-container'>
@@ -416,16 +436,18 @@ class SearchBar extends React.Component {
 				{this.state.isActive &&
 					<div className='drop-down-container' >
 						<div className='drop-down'>
-							<div>
-								{this.state.resultsLoading &&
-									<div className='loading-results-cover'>
-										<div className="loading-result-message">
-											<p>Loading...</p>
+							{this.state.resultsLoading &&
+								<div className='loading-results-cover'>
+									<div className="position-container">
+										<div className="positioner">
+											<div className="loading-animation"></div>
 										</div>
 									</div>
-								}
-								{results}
-							</div>
+								</div>
+							}
+							{!this.state.resultsLoading &&
+								results
+							}
 						</div>
 					</div>
 				}
@@ -438,11 +460,16 @@ let mapperFunction = function(queryResultJSON) {
 	let formattedObjects = [];
 	
 	queryResultJSON.forEach(function(item, idx) {
-		let newObject = {};
-		newObject.title = item.groupName;
-		newObject.imageURL = item.imgURL;
-		newObject.targetURL = item.targetURL; 
-		formattedObjects.push(newObject);
+		let hasAnyFields = (Object.keys(item).length !== 0)
+		let isObject = (item.constructor === Object)
+
+		if(hasAnyFields && isObject) {
+			let newObject = {};
+			newObject.title = item.groupName;
+			newObject.imageURL = item.imgURL;
+			newObject.targetURL = item.targetURL; 
+			formattedObjects.push(newObject);
+		}
 	});
 
 	return formattedObjects;
@@ -468,8 +495,9 @@ class AppComponent extends React.Component {
       <div className='index'>
       	<SearchBar 
       		searchQueryURL={"http://www.localhost:3030/groups"} 
-      		customResultComponentGenerator={customBoxGenerator}
+      		{customResultComponentGenerator={customBoxGenerator}}
   		 	resultMapper={mapperFunction}
+  		 	searchDelay={400}
   		 	searchQueryURLFormatter={queryFormat}
   		 	extraQueryOptions={{ option1: true, option2: false }} />
       </div>

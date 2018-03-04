@@ -30,7 +30,7 @@ let searchQueryURLFormatter = function(searchQuery, searchQueryURL, extraQueryOp
 ```
 The value returned from this function will be used to as the URL that fetches results from the server. There is no limitation on the structure of the returned string value.
 
-#### resultMapper Implementation
+#### resultMapper Implementation (always return an array even if no result)
 The resultMapper function is required to take 1 argument:
 * qeuryResult : the JSON result returned from the server
 
@@ -62,7 +62,7 @@ The following properties are not required, but allow you to configure the compon
 
 | Property | Type | Description |
 | -------- | ---- | ----------- |
-| **extraOptions** | *Any* | This object will be passed to your query format function. The intention is to allow external componenets to configure the search. For example if you create a filter box, you can pass a JSON object of { isFree: true }, and appened that value to the search query before it is fired |
+| **extraQueryOptions** | *Any* | This object will be passed to your `searchQueryURLFormatter` function. The intention is to allow external componenets to configure the search. For example if you create a filter box, you can pass a JSON object of { isFree: true }, and appened that value to the search query before it is sent |
 | **showImage** | *Boolean* | If set to `true` the search results will display a square image on the far left
 | **circleImage** | *Boolean* | If `showImage` is true, you can make the image a circle by setting this property to true
 | **maxResultsToDisplay** | *Integer* | The maximum number of results displayed on search
@@ -72,7 +72,7 @@ The following properties are not required, but allow you to configure the compon
 
 
 #### customResultComponentGenerator 
-If you have decided to use the customResultComponentGenerator property there are a few format requirements.
+If you have decided to use the `customResultComponentGenerator` property there are a few format requirements.
 
 Firstly the function is required to take the 2 following arguments:
 * idx : The index of the item in the results list 
@@ -92,11 +92,13 @@ let customResultComponentGenerator = function(idx, resultJsonItem) {
 ```
 
 Thirdly RSB will append (and handle) the following properties to your custom react component :
+
 | Property | Type | Description |
 | -------- | ---- | ----------- |
 | *keyRef* | **Integer** | The index number of the result |
 | *isSelected* | **Boolean** | This value returns true if the relevent result is currently selected |
 | *onHoverSelect* | **function** | Call this function, passing the keyRef to inform RSB that the current item is to be set as the selected result. (required for mouse selection, however keyboard navigation will work without) |
+
 
 An example of a correctly configured custom result box component is as follows:
 ```javascript
@@ -113,7 +115,7 @@ class CustomResultBox extends React.Component {
 }
 ```
 
-Fourthly, if you are using a custom-result-box component then your resultMapFunction will have to correspond to the properties of that componenet. The default result box uses the props: title, targetURL, imageURL. If for example your server returned a result with `name` and `DoB` properties, and your custom componenet had the properties `title`, `subtitle`, your mapper would look like this :
+Fourthly, if you are using a custom result box then your `resultMapFunction` will have to correspond to the properties for that componenet. If for example your server returned a result with `name` and `DoB` properties, and your custom componenet had the properties `title`, `subtitle`, your mapper would look like this :
 ```javascript
 let mapperFunction = function(queryReturn) {
 	let formattedObjects = [];
@@ -130,7 +132,7 @@ let mapperFunction = function(queryReturn) {
 
 ```
 
-Once your custom-result-box componenet, and customResultComponentGenerator are configured, keyboard binding, mouse binding and search result binding will all be handled by RSB. The only requirements on your end, is to decide how to use the "isSelected" and "onHoverSelect(idx)" functions supplied to your custom-result-box React Componenet. For example isSelected can be used to add a class to the component when it is selected.
+Once your custom result box componenet, and `customResultComponentGenerator` are configured; keyboard binding, mouse binding and search result binding will all be handled by RSB. The only requirements on your end, is to decide how to use the "isSelected" and "onHoverSelect(idx)" functions supplied to your custom result box componenet (For example isSelected can be used to add a class to the component when it is selected).
 
 
 ### Default Props
