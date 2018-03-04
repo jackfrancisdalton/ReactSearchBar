@@ -98,6 +98,7 @@ Thirdly RSB will append (and handle) the following properties to your custom rea
 | *keyRef* | **Integer** | The index number of the result |
 | *isSelected* | **Boolean** | This value returns true if the relevent result is currently selected |
 | *onHoverSelect* | **function** | Call this function, passing the keyRef to inform RSB that the current item is to be set as the selected result. (required for mouse selection, however keyboard navigation will work without) |
+| *onClick* | **function** | TO DOOOOOOOOOOOOO |
 
 
 An example of a correctly configured custom result box component is as follows:
@@ -141,6 +142,7 @@ If no optional properties are supplied to the search component, the following de
 ```javascript
 default {
 	useNavLink: false,
+	showImage: false, 
 	circularImage: false,
 	searchDelay: 100,
 	resultsToDisplay: 6,

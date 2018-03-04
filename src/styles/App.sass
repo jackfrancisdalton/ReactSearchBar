@@ -28,7 +28,7 @@ body
     50%
         transform: rotate(150deg)
     70%
-        transform: rotate(280deg)
+        transform: rotate(270deg)
     100%
         transform: rotate(360deg)
 
@@ -44,7 +44,7 @@ body
             box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08)
             outline: none
             border: 1px solid black
-            border-radius: 3px
+            // border-radius: 3px
             padding: 5px
             box-sizing: border-box
             width: 100%
@@ -123,6 +123,7 @@ body
                 &.selected
                     background: rgb(9, 134, 196)
 
+
                     .info-container
                         .result-title
                             color: white
@@ -143,6 +144,13 @@ body
                         height: 100%
                         margin: 0
                         padding: 0
+
+                .info-container-full-width 
+                    width: 100%
+                    display: inline-block
+                    box-sizing: border-box
+                    padding: 0
+                    margin: 0
 
                 .info-container
                     height: $resultHeight

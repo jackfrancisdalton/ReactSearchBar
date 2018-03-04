@@ -33,16 +33,36 @@ class SearchResult extends React.Component {
 	}
 
 	render() {
+		let content = []
+
+
+		if(this.props.imageURL == null) {
+			content = (
+				<div className='info-container-full-width'>
+					<div className='result-title'>{this.props.title}</div>
+				</div>
+			)
+		} else  {
+			content = [
+				(
+					<div className={'image-container' + (this.props.circleImage ? " circle-image" : "")}>
+						<img className='result-image' src={"https://www.fillmurray.com/100/100"}/>
+					</div>
+				), (
+					<div className='info-container'>
+						<div className='result-title'>{this.props.title}</div>
+					</div>
+				)
+			];
+		}
+
 
 		if(this.props.useNavLink) {
 			return (
-				<NavLink to={this.props.targetURL} 
-					title={this.props.title} 
+				<NavLink to={this.props.targetURL} title={this.props.title} 
 					onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}
 					className={'search-result' + (this.props.isSelected ? " selected" : "")} >
-
-					<div className={'image-container' + (this.props.circleImage ? " circle-image" : "")}><img className='result-image' src={"https://www.fillmurray.com/100/100"}/></div>
-					<div className='info-container'><div className='result-title'>{this.props.title}</div></div>
+					{content}
 				</NavLink>
 			)
 		}
@@ -52,27 +72,25 @@ class SearchResult extends React.Component {
 				title={this.props.title} 
 				onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)} 
 				className={'search-result' + (this.props.isSelected ? " selected" : "")} >
-
-				<div className={'image-container' + (this.props.circleImage ? " circle-image" : "")}><img className='result-image' src={"https://www.fillmurray.com/100/100"}/></div>
-				<div className='info-container'><div className='result-title'>{this.props.title}</div></div>
+				{content}
 			</a>
 		)
 	}
 }
 
-class BasicSearchResult extends React.Component {
-	constructor(props) {
-		super(props)
-	}
+// class BasicSearchResult extends React.Component {
+// 	constructor(props) {
+// 		super(props)
+// 	}
 
-	render() {
-		return(
-			<a href={this.props.targetURL} onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}>
-				<div>{this.props.title} - {this.props.isSelected.toString()}</div>
-			</a>
-		)
-	}
-}
+// 	render() {
+// 		return(
+// 			<a href={this.props.targetURL} onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}>
+// 				<div>{this.props.title} - {this.props.isSelected.toString()}</div>
+// 			</a>
+// 		)
+// 	}
+// }
 
 
 class SearchBar extends React.Component {
@@ -102,6 +120,7 @@ class SearchBar extends React.Component {
 	  circularImage: false,
 	  searchDelay: 100,
 	  resultsToDisplay: 6,
+	  showImage: false,
 	  customResultComponentGenerator: null,
 	  errorMessage: "No Results Found",
 	};
@@ -414,15 +433,12 @@ class SearchBar extends React.Component {
 			}
 		}
 
-		console.log(results)
-
 		if(results != null) {
 			if(results.length <= 0 && !this.state.resultsLoading) {
 				results = (<NoResult message={this.props.errorMessage} />)
 			}
 		}
 		
-
 		return (
 			<div className='search-bar-container' ref={this.setWrapperRef}>
 				<div className='search-input-container'>
@@ -466,7 +482,7 @@ let mapperFunction = function(queryResultJSON) {
 		if(hasAnyFields && isObject) {
 			let newObject = {};
 			newObject.title = item.groupName;
-			newObject.imageURL = item.imgURL;
+			// newObject.imageURL = item.imgURL;
 			newObject.targetURL = item.targetURL; 
 			formattedObjects.push(newObject);
 		}
@@ -495,7 +511,6 @@ class AppComponent extends React.Component {
       <div className='index'>
       	<SearchBar 
       		searchQueryURL={"http://www.localhost:3030/groups"} 
-      		{customResultComponentGenerator={customBoxGenerator}}
   		 	resultMapper={mapperFunction}
   		 	searchDelay={400}
   		 	searchQueryURLFormatter={queryFormat}
@@ -511,7 +526,5 @@ export default AppComponent;
 
 //TODO
 // add support for class overrides
-// add support for (has image) + (has subtitle)
-// add support for "mapper function"
-// add option for image/circle image or just text
+// add on click function to read me of custom result 
 // add theme option material theme, bootstrap theme
