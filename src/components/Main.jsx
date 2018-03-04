@@ -35,7 +35,6 @@ class SearchResult extends React.Component {
 	render() {
 		let content = []
 
-
 		if(this.props.imageURL == null) {
 			content = (
 				<div className='info-container-full-width'>
@@ -45,7 +44,7 @@ class SearchResult extends React.Component {
 		} else  {
 			content = [
 				(
-					<div className={'image-container' + (this.props.circleImage ? " circle-image" : "")}>
+					<div className={'image-container' + (this.props.isCircleImage ? " circle-image" : "")}>
 						<img className='result-image' src={"https://www.fillmurray.com/100/100"}/>
 					</div>
 				), (
@@ -168,22 +167,25 @@ class SearchBar extends React.Component {
 		// Optional Properties
 		extraOptions: React.PropTypes.object,
 		showImage: React.PropTypes.bool,
-		circleImage: React.PropTypes.bool,
+		circularImage: React.PropTypes.bool,
 		maxResultsToDisplay: React.PropTypes.number,
 		searchDelay: React.PropTypes.number,
 		useNavLink: React.PropTypes.bool,
 		errorMessage: React.PropTypes.string,
 		customResultComponentGenerator: function(props, propName, componentName) {
 			let fn = props[propName];
-			let isFunction = (typeof fn.prototype.constructor === 'function')
-			let validVariableCount = (fn.prototype.constructor.length === 2)
 
-			if(!isFunction) { 
-				return new Error(propName + ' must be a function'); 
-			}
+			if(fn) {
+				let isFunction = (typeof fn.prototype.constructor === 'function')
+				let validVariableCount = (fn.prototype.constructor.length === 2)
 
-			if(!validVariableCount) { 
-				return new Error(propName + ' function must have the 2 arguments: idx (type of Number), resultJsonItem(type of JSON)'); 
+				if(!isFunction) { 
+					return new Error(propName + ' must be a function'); 
+				}
+
+				if(!validVariableCount) { 
+					return new Error(propName + ' function must have the 2 arguments: idx (type of Number), resultJsonItem(type of JSON)'); 
+				}
 			}
 		}
 	}
@@ -393,7 +395,7 @@ class SearchBar extends React.Component {
 					// if the current result index is more than the desired amount, do not render a componenet
 					if(self.props.resultsToDisplay > idx) {
 
-						//calculate 
+						//calculate if the result is selected
 						let isSelected = ((self.state.selectedResult == idx) ? true : false)
 						results.push(
 							<SearchResult key={idx} 
@@ -405,7 +407,7 @@ class SearchBar extends React.Component {
 									isSelected={isSelected}
 									onClick={self.onResultClicked}
 									useNavLink={self.props.useNavLink} 
-									circleImage={self.props.circleImage}/>
+									isCircleImage={self.props.circularImage}/>
 						)
 					}
 				})
@@ -454,7 +456,7 @@ class SearchBar extends React.Component {
 						<div className='drop-down'>
 							{this.state.resultsLoading &&
 								<div className='loading-results-cover'>
-									<div className="position-container">
+									<div className='position-container'>
 										<div className="positioner">
 											<div className="loading-animation"></div>
 										</div>
@@ -482,7 +484,7 @@ let mapperFunction = function(queryResultJSON) {
 		if(hasAnyFields && isObject) {
 			let newObject = {};
 			newObject.title = item.groupName;
-			// newObject.imageURL = item.imgURL;
+			newObject.imageURL = item.imgURL;
 			newObject.targetURL = item.targetURL; 
 			formattedObjects.push(newObject);
 		}
@@ -512,6 +514,7 @@ class AppComponent extends React.Component {
       	<SearchBar 
       		searchQueryURL={"http://www.localhost:3030/groups"} 
   		 	resultMapper={mapperFunction}
+  		 	circularImage={true}
   		 	searchDelay={400}
   		 	searchQueryURLFormatter={queryFormat}
   		 	extraQueryOptions={{ option1: true, option2: false }} />
@@ -525,6 +528,9 @@ export default AppComponent;
 
 
 //TODO
+// add support for custom search bar
+// add support for custom error message
+// add support for custom loading bar
 // add support for class overrides
 // add on click function to read me of custom result 
 // add theme option material theme, bootstrap theme
