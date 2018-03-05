@@ -2,61 +2,90 @@
 
 
 body
-    color: #fff
-    background: #222
+    color: #000
+    background: #fff
 
 .index 
-
-    .notice 
-        margin: 20px auto
-        padding: 15px 0
-        text-align: center
-        border: 1px solid #000
-        border-width: 1px 0
-        background: #666
 
     h1, h2, h3, h4, h5 
         color: #000
 
-
+$accentColour: #4286f4 
+$darkColour: #ccc
 
 @keyframes rotation
     0%
         transform: rotate(0deg)
-    25%
-        transform: rotate(90deg)
-    50%
-        transform: rotate(150deg)
-    70%
-        transform: rotate(270deg)
     100%
         transform: rotate(360deg)
 
+.container
+    width: 400px
+    margin: 30px auto
+
 .search-bar-container
-    width: 300px
+    width: 100%
     margin: 10px auto
     position: relative
 
     .search-input-container
+        $searchBarHeight: 40px 
+        $buttonWidth: 50px
+
         // border: 1px solid red
+        height: $searchBarHeight;
 
         .search-input
-            box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08)
-            outline: none
-            border: 1px solid black
-            // border-radius: 3px
-            padding: 5px
-            box-sizing: border-box
-            width: 100%
+            height: $searchBarHeight;
+            background: #fff
+            transition: box-shadow 200ms cubic-bezier(0.4, 0.0, 0.2, 1)
+            border: 1px solid $darkColour
+            overflow: hidden
+            border-radius: 2px
+            position: relative
+
+            .search-input-text
+                position: absolute
+                top: 0
+                left: 0
+                height: 100%
+                width: 100%
+                margin-right: -$buttonWidth
+                outline: none
+                box-sizing: border-box
+
+            .search-button
+                position: absolute
+                right: 0
+                top: 0 
+                height: 100%
+                width: $buttonWidth
+                border: none
+                color: #fff
+                text-transform: uppercase
+                font-weight: bold
+                outline: none
+                line-height: 100%
+                transition: background 0.2s ease-in-out
+                background: #4286f4
+
+                &:hover 
+                    background: darken(#4286f4, 20%)
+
+                .search-icon
+                    fill: #fff
+
+            &:focus 
+                box-shadow: 0 2px 2px 0 rgba(0, 0, 255,0.16), 0 0 0 1px rgba(0,0,255,0.08)
 
     .drop-down-container
-        // padding: 10px
         box-sizing: border-box
-        // border: 1px solid blue
+        border: 1px solid #ddd
         position: absolute
         top: 100%
         left: 0
         width: 100%
+        box-shadow: 0 4px 6px 2px rgba(0, 0, 0, .2)
 
         .no-result-container
             .no-results-message
@@ -71,9 +100,6 @@ body
             .loading-results-cover
                 width: 100%
                 height: 200px
-                // position: absolute
-                // top: 0
-                // left: 0
                 display: block
                 background: rgba(255, 255, 255, 1)
 
@@ -95,12 +121,10 @@ body
                             width: 40px
                             height: 40px
                             border-radius: 50%
-                            animation: 1s linear rotation infinite
+                            animation: 0.5s linear rotation infinite
                             box-shadow: 0px 0px 18px -2px rgba(0,0,0,0.77)
                             border: 5px solid rgba(0,0,0, 0.2)
-                            border-top: 5px solid rgba(0,0,0, 1)
-
-
+                            border-top: 5px solid $accentColour
 
 
             $resultHeight: 30px;
@@ -112,7 +136,7 @@ body
                 background: #fff
                 color: #000
                 padding: 10px
-                border-top: 1px solid grey;
+                border-top: 1px solid #ddd;
                 box-sizing: border-box;
                 text-decoration: none
                 transition: background 0.2s ease-in-out
@@ -121,12 +145,10 @@ body
                     border: none
 
                 &.selected
-                    background: rgb(9, 134, 196)
-
+                    background: #ecf0f7
 
                     .info-container
                         .result-title
-                            color: white
 
 
                 .image-container

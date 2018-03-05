@@ -3,14 +3,13 @@ require('styles/App.sass');
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-let yeomanImage = require('../images/yeoman.png');
-
+import PropTypes from 'prop-types';
 
 class NoResult extends React.Component {
 	render() {
 		return(
-			<div className="no-result-container">
-				<div className="no-results-message">{this.props.message}</div>
+			<div className='no-result-container'>
+				<div className='no-results-message'>{this.props.message}</div>
 			</div>
 		)
 	}
@@ -19,13 +18,6 @@ class NoResult extends React.Component {
 class SearchResult extends React.Component {
 	constructor(props) {
 		super(props)
-		// index number
-		// image url
-		// image position
-		// image class override
-		// content 
-		// content class override
-		// 
 	}
 
 	onClick(event) {
@@ -44,11 +36,11 @@ class SearchResult extends React.Component {
 		} else  {
 			content = [
 				(
-					<div className={'image-container' + (this.props.isCircleImage ? " circle-image" : "")}>
-						<img className='result-image' src={"https://www.fillmurray.com/100/100"}/>
+					<div key={1} className={'image-container' + (this.props.isCircleImage ? ' circle-image' : '')}>
+						<img className='result-image' src={'https://www.fillmurray.com/100/100'}/>
 					</div>
 				), (
-					<div className='info-container'>
+					<div key={2} className='info-container'>
 						<div className='result-title'>{this.props.title}</div>
 					</div>
 				)
@@ -58,19 +50,19 @@ class SearchResult extends React.Component {
 
 		if(this.props.useNavLink) {
 			return (
-				<NavLink to={this.props.targetURL} title={this.props.title} 
+				<NavLink to={this.props.targetURL} title={this.props.title}
 					onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}
-					className={'search-result' + (this.props.isSelected ? " selected" : "")} >
+					className={'search-result' + (this.props.isSelected ? ' selected' : '')} >
 					{content}
 				</NavLink>
 			)
 		}
 		
 		return (
-			<a href={this.props.targetURL} 
-				title={this.props.title} 
-				onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)} 
-				className={'search-result' + (this.props.isSelected ? " selected" : "")} >
+			<a href={this.props.targetURL}
+				title={this.props.title}
+				onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}
+				className={'search-result' + (this.props.isSelected ? ' selected' : '')} >
 				{content}
 			</a>
 		)
@@ -101,7 +93,7 @@ class SearchBar extends React.Component {
 			searchQuery: '',
 			resultSet: null,
 			resultsLoading: false,
-			selectedResult: 0,
+			selectedResult: 0
 		}
 
 		this.handleKeyDown = this.handleKeyDown.bind(this)
@@ -115,79 +107,13 @@ class SearchBar extends React.Component {
 
 	// Set default values
 	static defaultProps = {
-	  useNavLink: false,
-	  circularImage: false,
-	  searchDelay: 100,
-	  resultsToDisplay: 6,
-	  showImage: false,
-	  customResultComponentGenerator: null,
-	  errorMessage: "No Results Found",
-	};
-
-	// Property Validation
-	static propTypes = {
-
-		// Mandatory Porperties
-		searchQueryURL: React.PropTypes.string.isRequired,
-		searchQueryURLFormatter: function(props, propName, componentName) {
-			let fn = props[propName];
-			let isFunction = (typeof fn.prototype.constructor === 'function')
-			let validVariableCount = (fn.prototype.constructor.length === 3)
-
-			if(!fn.prototype) {
-				throw new Error(propName + " is a required property")
-			}
-
-			if(!isFunction) { 
-				return new Error(propName + ' must be a function'); 
-			}
-
-			if(!validVariableCount) { 
-				return new Error(propName + ' function must have the 3 arguments: searchQuery(typeof string), queryString(typeof String), extraQueryOptions (typeof Anything)'); 
-			}
-		},
-		resultMapper: function(props, propName, componentName) {
-			let fn = props[propName];
-			let isFunction = (typeof fn.prototype.constructor === 'function')
-			let validVariableCount = (fn.prototype.constructor.length === 1)
-
-			if(!fn.prototype) {
-				throw new Error(propName + " is a required property")
-			}
-
-			if(!isFunction) { 
-				return new Error(propName + ' must be a function'); 
-			}
-
-			if(!validVariableCount) { 
-				return new Error(propName + ' function must have the argument: queryResultJSON (type of JSON)'); 
-			}
-		},
-			
-		// Optional Properties
-		extraOptions: React.PropTypes.object,
-		showImage: React.PropTypes.bool,
-		circularImage: React.PropTypes.bool,
-		maxResultsToDisplay: React.PropTypes.number,
-		searchDelay: React.PropTypes.number,
-		useNavLink: React.PropTypes.bool,
-		errorMessage: React.PropTypes.string,
-		customResultComponentGenerator: function(props, propName, componentName) {
-			let fn = props[propName];
-
-			if(fn) {
-				let isFunction = (typeof fn.prototype.constructor === 'function')
-				let validVariableCount = (fn.prototype.constructor.length === 2)
-
-				if(!isFunction) { 
-					return new Error(propName + ' must be a function'); 
-				}
-
-				if(!validVariableCount) { 
-					return new Error(propName + ' function must have the 2 arguments: idx (type of Number), resultJsonItem(type of JSON)'); 
-				}
-			}
-		}
+		useNavLink: false,
+		circularImage: false,
+		searchDelay: 100,
+		resultsToDisplay: 6,
+		showImage: false,
+		customResultComponentGenerator: null,
+		errorMessage: 'No Results Found'
 	}
 
 	componentWillMount() {
@@ -209,7 +135,7 @@ class SearchBar extends React.Component {
 		if(!this.state.resultsLoading) {
 			switch(e.keyCode) {
 				// TAB
-				case 9: { 
+				case 9: {
 					e.preventDefault();
 					
 					// handle tab when shift is held
@@ -226,7 +152,7 @@ class SearchBar extends React.Component {
 					break;
 				}
 				// ENTER
-				case 13: { 
+				case 13: {
 					e.preventDefault();
 
 					// Go to the target URL of the result
@@ -240,7 +166,7 @@ class SearchBar extends React.Component {
 					break;
 				}
 				// ESCAPE
-				case 27: { 
+				case 27: {
 					e.preventDefault();
 					this.setState({
 						isActive: false,
@@ -252,7 +178,7 @@ class SearchBar extends React.Component {
 				}
 				// DOWN
 				case 38: {
-					e.preventDefault(); 
+					e.preventDefault();
 					let nextIndex = this.state.selectedResult - 1;
 			    	if(this.state.selectedResult <= 0) { nextIndex = (this.props.resultsToDisplay - 1) }
 			    	this.setState({ selectedResult: nextIndex })
@@ -268,7 +194,6 @@ class SearchBar extends React.Component {
 				}
 		    }
 		}
-		
 	}
 
 	onFocus(event) {
@@ -301,7 +226,7 @@ class SearchBar extends React.Component {
 							resultSet: formattedResults,
 							resultsLoading: false
 						});
-					})	
+					})
 			}, self.props.searchDelay));
 		}
 	}
@@ -312,7 +237,7 @@ class SearchBar extends React.Component {
 		let isActive = false;
 
 		// if searchquery is not nothing then search for result
-		if(searchQuery.length) {			
+		if(searchQuery.length) {
 			isActive = true;
 		}
 
@@ -345,16 +270,14 @@ class SearchBar extends React.Component {
 							resultSet: formattedResults,
 							resultsLoading: false
 						});
-					})	
+					})
 			}
-		}, self.props.searchDelay));	
+		}, self.props.searchDelay));
 	}
 
 	onResultClicked() {
 		this.timeouts.forEach(clearTimeout);
-		this.setState({
-			isActive: false,
-		})
+		this.setState({ isActive: false })
 	}
 
 	onHoverSetSelected(newIndex) {
@@ -362,7 +285,7 @@ class SearchBar extends React.Component {
 		if(!this.state.resultsLoading) {
 			this.setState({
 				selectedResult: newIndex
-			});	
+			});
 		}
 	}
 
@@ -374,8 +297,8 @@ class SearchBar extends React.Component {
     	// if the drop down is active, and the mouse clicks off of the results hide the results
         if(this.state.isActive) {
 	        if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
-	     		this.setState({ isActive: false })       
-	        }	
+	     		this.setState({ isActive: false })
+	        }
         }
     }
 
@@ -398,15 +321,15 @@ class SearchBar extends React.Component {
 						//calculate if the result is selected
 						let isSelected = ((self.state.selectedResult == idx) ? true : false)
 						results.push(
-							<SearchResult key={idx} 
+							<SearchResult key={idx}
 									keyRef={idx} 
 									title={item.title}
 									targetURL={item.targetURL}
 									imageURL={item.imageURL}
-									onHoverSelect={self.onHoverSetSelected} 
+									onHoverSelect={self.onHoverSetSelected}
 									isSelected={isSelected}
 									onClick={self.onResultClicked}
-									useNavLink={self.props.useNavLink} 
+									useNavLink={self.props.useNavLink}
 									isCircleImage={self.props.circularImage}/>
 						)
 					}
@@ -444,21 +367,29 @@ class SearchBar extends React.Component {
 		return (
 			<div className='search-bar-container' ref={this.setWrapperRef}>
 				<div className='search-input-container'>
-					<input type='text' 
-							value={this.state.searchQuery} 
-							onKeyDown={this.handleKeyDown} 
-							onFocus={this.onFocus}
-							onChange={this.onType} 
-							className='search-input' />
+					<form className="search-input">
+						<input type='text'
+								value={this.state.searchQuery}
+								onKeyDown={this.handleKeyDown}
+								onFocus={this.onFocus}
+								onChange={this.onType}
+								className='search-input-text' />
+						<button className='search-button'>
+							<svg className="search-icon" fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+							    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+							    <path d="M0 0h24v24H0z" fill="none"/>
+							</svg>
+						</button>
+					</form>
 				</div>
 				{this.state.isActive &&
-					<div className='drop-down-container' >
+					<div className='drop-down-container'>
 						<div className='drop-down'>
 							{this.state.resultsLoading &&
 								<div className='loading-results-cover'>
 									<div className='position-container'>
-										<div className="positioner">
-											<div className="loading-animation"></div>
+										<div className='positioner'>
+											<div className='loading-animation'></div>
 										</div>
 									</div>
 								</div>
@@ -474,6 +405,72 @@ class SearchBar extends React.Component {
 	}
 }
 
+// Property Validation
+SearchBar.propTypes = {
+
+	// Mandatory Porperties
+	searchQueryURL: React.PropTypes.string.isRequired,
+	searchQueryURLFormatter: function(props, propName, componentName) {
+		let fn = props[propName];
+		let isFunction = (typeof fn.prototype.constructor === 'function')
+		let validVariableCount = (fn.prototype.constructor.length === 3)
+
+		if(!fn.prototype) {
+			throw new Error(propName + ' is a required property')
+		}
+
+		if(!isFunction) {
+			return new Error(propName + ' must be a function');
+		}
+
+		if(!validVariableCount) {
+			return new Error(propName + ' function must have the 3 arguments: searchQuery(typeof string), queryString(typeof String), extraQueryOptions (typeof Anything)'); 
+		}
+	},
+	resultMapper: function(props, propName, componentName) {
+		let fn = props[propName];
+		let isFunction = (typeof fn.prototype.constructor === 'function')
+		let validVariableCount = (fn.prototype.constructor.length === 1)
+
+		if(!fn.prototype) {
+			throw new Error(propName + ' is a required property')
+		}
+
+		if(!isFunction) {
+			return new Error(propName + ' must be a function');
+		}
+
+		if(!validVariableCount) {
+			return new Error(propName + ' function must have the argument: queryResultJSON (type of JSON)');
+		}
+	},
+		
+	// Optional Properties
+	extraOptions: React.PropTypes.object,
+	showImage: React.PropTypes.bool,
+	circularImage: React.PropTypes.bool,
+	maxResultsToDisplay: React.PropTypes.number,
+	searchDelay: React.PropTypes.number,
+	useNavLink: React.PropTypes.bool,
+	errorMessage: React.PropTypes.string,
+	customResultComponentGenerator: function(props, propName, componentName) {
+		let fn = props[propName];
+
+		if(fn) {
+			let isFunction = (typeof fn.prototype.constructor === 'function')
+			let validVariableCount = (fn.prototype.constructor.length === 2)
+
+			if(!isFunction) {
+				return new Error(propName + ' must be a function');
+			}
+
+			if(!validVariableCount) {
+				return new Error(propName + ' function must have the 2 arguments: idx (type of Number), resultJsonItem(type of JSON)');
+			}
+		}
+	}
+}
+
 let mapperFunction = function(queryResultJSON) {
 	let formattedObjects = [];
 	
@@ -485,7 +482,7 @@ let mapperFunction = function(queryResultJSON) {
 			let newObject = {};
 			newObject.title = item.groupName;
 			newObject.imageURL = item.imgURL;
-			newObject.targetURL = item.targetURL; 
+			newObject.targetURL = item.targetURL;
 			formattedObjects.push(newObject);
 		}
 	});
@@ -499,7 +496,7 @@ let queryFormat = function(searchQuery, searchQueryURL, extraQueryOptions) {
 
 let customBoxGenerator = function(idx, resultJsonItem) {
 	return(
-		<BasicSearchResult 
+		<BasicSearchResult
 			title={resultJsonItem.title}
 			targetURL={resultJsonItem.targetURL}
 			imageURL={resultJsonItem.imageURL} />
@@ -511,13 +508,14 @@ class AppComponent extends React.Component {
   render() {
     return (
       <div className='index'>
-      	<SearchBar 
-      		searchQueryURL={"http://www.localhost:3030/groups"} 
-  		 	resultMapper={mapperFunction}
-  		 	circularImage={true}
-  		 	searchDelay={400}
-  		 	searchQueryURLFormatter={queryFormat}
-  		 	extraQueryOptions={{ option1: true, option2: false }} />
+      	<div className='container'>
+			<SearchBar
+	      		searchQueryURL={'http://www.localhost:3030/groups'}
+	  		 	resultMapper={mapperFunction}
+	  		 	circularImage={true}
+	  		 	searchDelay={400}
+	  		 	searchQueryURLFormatter={queryFormat} />
+      	</div>
       </div>
     );
   }
@@ -528,9 +526,12 @@ export default AppComponent;
 
 
 //TODO
+// add searchButton
+// add search button query
+// add custom search button
 // add support for custom search bar
 // add support for custom error message
 // add support for custom loading bar
 // add support for class overrides
-// add on click function to read me of custom result 
+// add on click function to read me of custom result
 // add theme option material theme, bootstrap theme
