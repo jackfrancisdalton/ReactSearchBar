@@ -27,7 +27,7 @@ class SearchResult extends React.Component {
 	render() {
 		let content = []
 
-		if(this.props.imageURL == null) {
+		if(!this.props.showImage) {
 			content = (
 				<div className='info-container-full-width'>
 					<div className='result-title'>{this.props.title}</div>
@@ -65,6 +65,30 @@ class SearchResult extends React.Component {
 				className={'search-result' + (this.props.isSelected ? ' selected' : '')} >
 				{content}
 			</a>
+		)
+	}
+}
+
+class CustomSearchButton extends React.Component {
+	constructor(props) {
+		super(props)
+	}
+
+	render() {
+		return(
+			<div>button</div>
+		)
+	}
+}
+
+class CustomLoadingCircle extends React.Component {
+	constructor(props) {
+		super(props)
+	}
+
+	render() {
+		return(
+			<div>LOADING...</div>
 		)
 	}
 }
@@ -211,7 +235,6 @@ class SearchBar extends React.Component {
 			
 			let finalSearchURL = this.props.searchQueryURLFormatter(
 				self.props.searchQuery,
-				self.props.searchQueryURL,
 				self.props.extraQueryOptions,
 			)
 
@@ -254,7 +277,6 @@ class SearchBar extends React.Component {
 		// formats the search query URL
 		let finalSearchURL = this.props.searchQueryURLFormatter(
 			self.props.searchQuery,
-			self.props.searchQueryURL,
 			self.props.extraQueryOptions,
 		)
 		
@@ -326,6 +348,7 @@ class SearchBar extends React.Component {
 									title={item.title}
 									targetURL={item.targetURL}
 									imageURL={item.imageURL}
+									showImage={self.props.showImage}
 									onHoverSelect={self.onHoverSetSelected}
 									isSelected={isSelected}
 									onClick={self.onResultClicked}
@@ -363,36 +386,47 @@ class SearchBar extends React.Component {
 				results = (<NoResult message={this.props.errorMessage} />)
 			}
 		}
+
+		let loadingBar
+		if(this.props.customLoadingBarGenerator) {
+			loadingBar = this.props.customLoadingBarGenerator()
+		} else {
+			loadingBar = (
+				<div className='loading-results-cover'>
+					<div className='position-container'>
+						<div className='positioner'>
+							<div className='loading-animation'></div>
+						</div>
+					</div>
+				</div>
+			)
+		}
 		
 		return (
 			<div className='search-bar-container' ref={this.setWrapperRef}>
 				<div className='search-input-container'>
 					<form className="search-input">
 						<input type='text'
-								value={this.state.searchQuery}
-								onKeyDown={this.handleKeyDown}
-								onFocus={this.onFocus}
-								onChange={this.onType}
-								className='search-input-text' />
-						<button className='search-button'>
-							<svg className="search-icon" fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-							    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-							    <path d="M0 0h24v24H0z" fill="none"/>
-							</svg>
-						</button>
+									value={this.state.searchQuery}
+									onKeyDown={this.handleKeyDown}
+									onFocus={this.onFocus}
+									onChange={this.onType}
+									className='search-input-text' />
+						{this.props.showSearchButton.show &&
+							<button className='search-button'>
+								<svg className="search-icon" fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+								    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+								    <path d="M0 0h24v24H0z" fill="none"/>
+								</svg>
+							</button>
+						}
 					</form>
 				</div>
 				{this.state.isActive &&
 					<div className='drop-down-container'>
 						<div className='drop-down'>
 							{this.state.resultsLoading &&
-								<div className='loading-results-cover'>
-									<div className='position-container'>
-										<div className='positioner'>
-											<div className='loading-animation'></div>
-										</div>
-									</div>
-								</div>
+								loadingBar
 							}
 							{!this.state.resultsLoading &&
 								results
@@ -409,11 +443,10 @@ class SearchBar extends React.Component {
 SearchBar.propTypes = {
 
 	// Mandatory Porperties
-	searchQueryURL: React.PropTypes.string.isRequired,
 	searchQueryURLFormatter: function(props, propName, componentName) {
 		let fn = props[propName];
 		let isFunction = (typeof fn.prototype.constructor === 'function')
-		let validVariableCount = (fn.prototype.constructor.length === 3)
+		let validVariableCount = (fn.prototype.constructor.length === 2)
 
 		if(!fn.prototype) {
 			throw new Error(propName + ' is a required property')
@@ -424,7 +457,7 @@ SearchBar.propTypes = {
 		}
 
 		if(!validVariableCount) {
-			return new Error(propName + ' function must have the 3 arguments: searchQuery(typeof string), queryString(typeof String), extraQueryOptions (typeof Anything)'); 
+			return new Error(propName + ' function must have the 3 arguments: searchQuery(typeof string), extraQueryOptions (typeof Anything)'); 
 		}
 	},
 	resultMapper: function(props, propName, componentName) {
@@ -490,8 +523,9 @@ let mapperFunction = function(queryResultJSON) {
 	return formattedObjects;
 }
 
-let queryFormat = function(searchQuery, searchQueryURL, extraQueryOptions) {
-	return searchQueryURL;
+let queryFormat = function(searchQuery, extraQueryOptions) {
+	let URLBase = 'http://www.localhost:3030/groups'
+	return URLBase;
 }
 
 let customBoxGenerator = function(idx, resultJsonItem) {
@@ -504,17 +538,31 @@ let customBoxGenerator = function(idx, resultJsonItem) {
 }
 
 
+let customButtonGenerator = function(searchTerm, extraOptions) {
+	return(<CustomSearchButton />)
+}
+
+let buttonTargetMapper = function(searchTerm) {
+	return 'http://www.localhost:3030/groups'
+}
+
+let customLoadingBarGenerator = function() {
+	return(<CustomLoadingCircle />)
+}
+
 class AppComponent extends React.Component {
   render() {
     return (
       <div className='index'>
       	<div className='container'>
 			<SearchBar
-	      		searchQueryURL={'http://www.localhost:3030/groups'}
+	      		searchQueryURLFormatter={queryFormat}
 	  		 	resultMapper={mapperFunction}
+	  		 	showImage={true}
 	  		 	circularImage={true}
-	  		 	searchDelay={400}
-	  		 	searchQueryURLFormatter={queryFormat} />
+	  		 	showSearchButton={{ show: true, mapperFunction: buttonTargetMapper }}
+	  		 	customLoadingBarGenerator={customLoadingBarGenerator}
+	  		 	searchDelay={400} />
       	</div>
       </div>
     );
@@ -524,9 +572,10 @@ class AppComponent extends React.Component {
 export default AppComponent;
 
 
+	  		 	// customButtonGenerator={{ show: true, mapperFunction: function(){}, customButtonGenerator: customButtonGenerator }}
 
 //TODO
-// add searchButton
+// move baseurl into formatter
 // add search button query
 // add custom search button
 // add support for custom search bar

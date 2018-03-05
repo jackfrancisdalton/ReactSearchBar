@@ -39,9 +39,6 @@ $darkColour: #ccc
             height: $searchBarHeight;
             background: #fff
             transition: box-shadow 200ms cubic-bezier(0.4, 0.0, 0.2, 1)
-            border: 1px solid $darkColour
-            overflow: hidden
-            border-radius: 2px
             position: relative
 
             .search-input-text
@@ -50,11 +47,13 @@ $darkColour: #ccc
                 left: 0
                 height: 100%
                 width: 100%
-                margin-right: -$buttonWidth
+                padding-right: $buttonWidth
+                padding-left: 10px
                 outline: none
                 box-sizing: border-box
 
             .search-button
+                cursor: pointer
                 position: absolute
                 right: 0
                 top: 0 
@@ -85,7 +84,7 @@ $darkColour: #ccc
         top: 100%
         left: 0
         width: 100%
-        box-shadow: 0 4px 6px 2px rgba(0, 0, 0, .2)
+        box-shadow: 0 2px 6px 2px rgba(0, 0, 0, .10)
 
         .no-result-container
             .no-results-message
@@ -122,9 +121,9 @@ $darkColour: #ccc
                             height: 40px
                             border-radius: 50%
                             animation: 0.5s linear rotation infinite
-                            box-shadow: 0px 0px 18px -2px rgba(0,0,0,0.77)
-                            border: 5px solid rgba(0,0,0, 0.2)
-                            border-top: 5px solid $accentColour
+                            box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5)
+                            border: 6px solid rgba(0,0,0, 0.2)
+                            border-top: 6px solid $accentColour
 
 
             $resultHeight: 30px;
