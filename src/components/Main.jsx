@@ -3,110 +3,26 @@ require('styles/App.sass');
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import PropTypeValidator from './PropTypeValidator.jsx'
 
-class NoResult extends React.Component {
-	render() {
-		return(
-			<div className='no-result-container'>
-				<div className='no-results-message'>{this.props.message}</div>
-			</div>
-		)
-	}
-}
+import ComponentFunctions from './ComponentFunctions.jsx'
 
-class SearchResult extends React.Component {
-	constructor(props) {
-		super(props)
-	}
+import {
+	NoResult,
+	SearchResult,
+	CustomSearchButton,
+	CustomLoadingCircle,
+	BasicSearchResult,
+} from './ChildComponents.jsx'
 
-	onClick(event) {
-		this.props.onClick();
-	}
-
-	render() {
-		let content = []
-
-		if(!this.props.showImage) {
-			content = (
-				<div className='info-container-full-width'>
-					<div className='result-title'>{this.props.title}</div>
-				</div>
-			)
-		} else  {
-			content = [
-				(
-					<div key={1} className={'image-container' + (this.props.isCircleImage ? ' circle-image' : '')}>
-						<img className='result-image' src={'https://www.fillmurray.com/100/100'}/>
-					</div>
-				), (
-					<div key={2} className='info-container'>
-						<div className='result-title'>{this.props.title}</div>
-					</div>
-				)
-			];
-		}
-
-
-		if(this.props.useNavLink) {
-			return (
-				<NavLink to={this.props.targetURL} title={this.props.title}
-					onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}
-					className={'search-result' + (this.props.isSelected ? ' selected' : '')} >
-					{content}
-				</NavLink>
-			)
-		}
-		
-		return (
-			<a href={this.props.targetURL}
-				title={this.props.title}
-				onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}
-				className={'search-result' + (this.props.isSelected ? ' selected' : '')} >
-				{content}
-			</a>
-		)
-	}
-}
-
-class CustomSearchButton extends React.Component {
-	constructor(props) {
-		super(props)
-	}
-
-	render() {
-		return(
-			<div>button</div>
-		)
-	}
-}
-
-class CustomLoadingCircle extends React.Component {
-	constructor(props) {
-		super(props)
-	}
-
-	render() {
-		return(
-			<div>LOADING...</div>
-		)
-	}
-}
-
-// class BasicSearchResult extends React.Component {
-// 	constructor(props) {
-// 		super(props)
-// 	}
-
-// 	render() {
-// 		return(
-// 			<a href={this.props.targetURL} onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}>
-// 				<div>{this.props.title} - {this.props.isSelected.toString()}</div>
-// 			</a>
-// 		)
-// 	}
-// }
-
+import {
+	mapperFunction,
+	queryFormat,
+	customBoxGenerator,
+	customButtonGenerator,
+	onClickButton,
+	customLoadingBarGenerator
+} from './ExampleImplementation.jsx'
 
 class SearchBar extends React.Component {
 	constructor(props) {
@@ -133,10 +49,10 @@ class SearchBar extends React.Component {
 	static defaultProps = {
 		useNavLink: false,
 		circularImage: false,
-		searchDelay: 100,
+		searchDelay: 300,
 		resultsToDisplay: 6,
 		showImage: false,
-		customResultComponentGenerator: null,
+		customResultComponentProducer: null,
 		errorMessage: 'No Results Found'
 	}
 
@@ -154,147 +70,15 @@ class SearchBar extends React.Component {
     }
 
 	handleKeyDown(e) {
-
-		// if the drop down is loading don't allow navigation
-		if(!this.state.resultsLoading) {
-			switch(e.keyCode) {
-				// TAB
-				case 9: {
-					e.preventDefault();
-					
-					// handle tab when shift is held
-					if(e.shiftKey) {
-						let nextIndex = this.state.selectedResult - 1;
-			    		if(this.state.selectedResult <= 0) { nextIndex = (this.props.resultsToDisplay - 1) }
-			    		this.setState({ selectedResult: nextIndex })
-					} else {
-						let nextIndex = this.state.selectedResult + 1;
-			    		if(this.state.selectedResult >= (this.props.resultsToDisplay - 1)) { nextIndex = 0 }
-			    		this.setState({ selectedResult: nextIndex })
-					}
-					
-					break;
-				}
-				// ENTER
-				case 13: {
-					e.preventDefault();
-
-					// Go to the target URL of the result
-					window.location.replace(this.state.resultSet[this.state.selectedResult].targetURL);
-
-					this.setState({
-						isActive: false,
-						selectedResult: 0,
-						resultsLoading: false
-					})
-					break;
-				}
-				// ESCAPE
-				case 27: {
-					e.preventDefault();
-					this.setState({
-						isActive: false,
-						selectedResult: 0,
-						searchQuery: '',
-						resultsLoading: false
-					})
-					break;
-				}
-				// DOWN
-				case 38: {
-					e.preventDefault();
-					let nextIndex = this.state.selectedResult - 1;
-			    	if(this.state.selectedResult <= 0) { nextIndex = (this.props.resultsToDisplay - 1) }
-			    	this.setState({ selectedResult: nextIndex })
-					break;
-				}
-				// UP
-		    	case 40: {
-		    		e.preventDefault();
-			    	let nextIndex = this.state.selectedResult + 1;
-			    	if(this.state.selectedResult >= (this.props.resultsToDisplay - 1)) { nextIndex = 0 }
-			    	this.setState({ selectedResult: nextIndex })
-					break;
-				}
-		    }
-		}
+		ComponentFunctions.handleKeyDown(this, e)	
 	}
 
-	onFocus(event) {
-		if(this.state.searchQuery.length > 0) {
-			let self = this;
-
-			// activaite loading cover on result set
-			this.setState({
-				isActive: true,
-				resultsLoading: true
-			});
-
-			// cancel pending requests
-			this.timeouts.forEach(clearTimeout);
-			
-			let finalSearchURL = this.props.searchQueryURLFormatter(
-				self.props.searchQuery,
-				self.props.extraQueryOptions,
-			)
-
-			// make request based on new searchquery
-			this.timeouts.push(setTimeout(function() {
-	 			fetch(finalSearchURL)
-					.then(response => response.json())
-					.then(json => {
-						let formattedResults = self.props.resultMapper(json)
-
-						self.setState({
-							resultSet: formattedResults,
-							resultsLoading: false
-						});
-					})
-			}, self.props.searchDelay));
-		}
+	onFocus(e) {
+		ComponentFunctions.onFocus(this, e)
 	}
 
-	onType(event) {
-		let self = this;
-		let searchQuery = event.target.value;
-		let isActive = false;
-
-		// if searchquery is not nothing then search for result
-		if(searchQuery.length) {
-			isActive = true;
-		}
-
-		// activaite loading cover on result set
-		this.setState({
-			isActive: isActive,
-			searchQuery: searchQuery,
-			resultsLoading: true
-		});
-
-		// cancel pending requests
-		this.timeouts.forEach(clearTimeout);
-
-		// formats the search query URL
-		let finalSearchURL = this.props.searchQueryURLFormatter(
-			self.props.searchQuery,
-			self.props.extraQueryOptions,
-		)
-		
-		// make request based on new searchquery
-		this.timeouts.push(setTimeout(function() {
-			if(isActive) {
-	 			fetch(finalSearchURL)
-					.then(response => response.json())
-					.then(json => {
-						let formattedResults = self.props.resultMapper(json)
-
-						self.setState({
-							resultSet: formattedResults,
-							resultsLoading: false
-						});
-					})
-			}
-		}, self.props.searchDelay));
+	onType(e) {
+		ComponentFunctions.onType(this, e)
 	}
 
 	onResultClicked() {
@@ -332,7 +116,7 @@ class SearchBar extends React.Component {
 		if(this.state.resultSet != null) {
 
 			// if custom result generator found
-			if(!this.props.customResultComponentGenerator) {
+			if(!this.props.customResultComponentProducer) {
 				
 				// loop through results and generate component for each result and assign to results
 				this.state.resultSet.forEach(function(item, idx) {
@@ -344,16 +128,16 @@ class SearchBar extends React.Component {
 						let isSelected = ((self.state.selectedResult == idx) ? true : false)
 						results.push(
 							<SearchResult key={idx}
-									keyRef={idx} 
-									title={item.title}
-									targetURL={item.targetURL}
-									imageURL={item.imageURL}
-									showImage={self.props.showImage}
-									onHoverSelect={self.onHoverSetSelected}
-									isSelected={isSelected}
-									onClick={self.onResultClicked}
-									useNavLink={self.props.useNavLink}
-									isCircleImage={self.props.circularImage}/>
+								keyRef={idx} 
+								title={item.title}
+								targetURL={item.targetURL}
+								imageURL={item.imageURL}
+								showImage={self.props.showImage}
+								onHoverSelect={self.onHoverSetSelected}
+								isSelected={isSelected}
+								onClick={self.onResultClicked}
+								useNavLink={self.props.useNavLink}
+								isCircleImage={self.props.circularImage}/>
 						)
 					}
 				})
@@ -363,7 +147,7 @@ class SearchBar extends React.Component {
 				this.state.resultSet.forEach(function(item, idx) {
 					if(self.props.resultsToDisplay > idx) {
 						let isSelected = ((self.state.selectedResult == idx) ? true : false)
-						let customDOMResult = self.props.customResultComponentGenerator(idx, item)
+						let customDOMResult = self.props.customResultComponentProducer(idx, item)
 						
 						// appened extra functions and props
 						customDOMResult = React.cloneElement(customDOMResult,
@@ -388,8 +172,8 @@ class SearchBar extends React.Component {
 		}
 
 		let loadingBar
-		if(this.props.customLoadingBarGenerator) {
-			loadingBar = this.props.customLoadingBarGenerator()
+		if(this.props.customLoadingBarProducer) {
+			loadingBar = this.props.customLoadingBarProducer()
 		} else {
 			loadingBar = (
 				<div className='loading-results-cover'>
@@ -402,23 +186,34 @@ class SearchBar extends React.Component {
 			)
 		}
 		
+		let searchButton
+		if(this.props.customButtonProducer) {
+			searchButton = this.props.customButtonProducer()
+		} else {
+			searchButton = (
+				<button onClick={(event) => this.props.searchButton.onButtonClick(event)} className='search-button'>
+					<svg className="search-icon" fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+					    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+					    <path d="M0 0h24v24H0z" fill="none"/>
+					</svg>
+				</button>
+			)
+		}
+
 		return (
 			<div className='search-bar-container' ref={this.setWrapperRef}>
 				<div className='search-input-container'>
 					<form className="search-input">
-						<input type='text'
-									value={this.state.searchQuery}
-									onKeyDown={this.handleKeyDown}
-									onFocus={this.onFocus}
-									onChange={this.onType}
-									className='search-input-text' />
-						{this.props.showSearchButton.show &&
-							<button className='search-button'>
-								<svg className="search-icon" fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-								    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-								    <path d="M0 0h24v24H0z" fill="none"/>
-								</svg>
-							</button>
+						<div className='text-input-wrapper'>
+							<input type='text'
+								value={this.state.searchQuery}
+								onKeyDown={this.handleKeyDown}
+								onFocus={this.onFocus}
+								onChange={this.onType}
+								className='search-input-text' />
+						</div>
+						{this.props.searchButton.show &&
+							searchButton
 						}
 					</form>
 				</div>
@@ -440,115 +235,7 @@ class SearchBar extends React.Component {
 }
 
 // Property Validation
-SearchBar.propTypes = {
-
-	// Mandatory Porperties
-	searchQueryURLFormatter: function(props, propName, componentName) {
-		let fn = props[propName];
-		let isFunction = (typeof fn.prototype.constructor === 'function')
-		let validVariableCount = (fn.prototype.constructor.length === 2)
-
-		if(!fn.prototype) {
-			throw new Error(propName + ' is a required property')
-		}
-
-		if(!isFunction) {
-			return new Error(propName + ' must be a function');
-		}
-
-		if(!validVariableCount) {
-			return new Error(propName + ' function must have the 3 arguments: searchQuery(typeof string), extraQueryOptions (typeof Anything)'); 
-		}
-	},
-	resultMapper: function(props, propName, componentName) {
-		let fn = props[propName];
-		let isFunction = (typeof fn.prototype.constructor === 'function')
-		let validVariableCount = (fn.prototype.constructor.length === 1)
-
-		if(!fn.prototype) {
-			throw new Error(propName + ' is a required property')
-		}
-
-		if(!isFunction) {
-			return new Error(propName + ' must be a function');
-		}
-
-		if(!validVariableCount) {
-			return new Error(propName + ' function must have the argument: queryResultJSON (type of JSON)');
-		}
-	},
-		
-	// Optional Properties
-	extraOptions: React.PropTypes.object,
-	showImage: React.PropTypes.bool,
-	circularImage: React.PropTypes.bool,
-	maxResultsToDisplay: React.PropTypes.number,
-	searchDelay: React.PropTypes.number,
-	useNavLink: React.PropTypes.bool,
-	errorMessage: React.PropTypes.string,
-	customResultComponentGenerator: function(props, propName, componentName) {
-		let fn = props[propName];
-
-		if(fn) {
-			let isFunction = (typeof fn.prototype.constructor === 'function')
-			let validVariableCount = (fn.prototype.constructor.length === 2)
-
-			if(!isFunction) {
-				return new Error(propName + ' must be a function');
-			}
-
-			if(!validVariableCount) {
-				return new Error(propName + ' function must have the 2 arguments: idx (type of Number), resultJsonItem(type of JSON)');
-			}
-		}
-	}
-}
-
-let mapperFunction = function(queryResultJSON) {
-	let formattedObjects = [];
-	
-	queryResultJSON.forEach(function(item, idx) {
-		let hasAnyFields = (Object.keys(item).length !== 0)
-		let isObject = (item.constructor === Object)
-
-		if(hasAnyFields && isObject) {
-			let newObject = {};
-			newObject.title = item.groupName;
-			newObject.imageURL = item.imgURL;
-			newObject.targetURL = item.targetURL;
-			formattedObjects.push(newObject);
-		}
-	});
-
-	return formattedObjects;
-}
-
-let queryFormat = function(searchQuery, extraQueryOptions) {
-	let URLBase = 'http://www.localhost:3030/groups'
-	return URLBase;
-}
-
-let customBoxGenerator = function(idx, resultJsonItem) {
-	return(
-		<BasicSearchResult
-			title={resultJsonItem.title}
-			targetURL={resultJsonItem.targetURL}
-			imageURL={resultJsonItem.imageURL} />
-	)
-}
-
-
-let customButtonGenerator = function(searchTerm, extraOptions) {
-	return(<CustomSearchButton />)
-}
-
-let buttonTargetMapper = function(searchTerm) {
-	return 'http://www.localhost:3030/groups'
-}
-
-let customLoadingBarGenerator = function() {
-	return(<CustomLoadingCircle />)
-}
+SearchBar.propTypes = PropTypeValidator
 
 class AppComponent extends React.Component {
   render() {
@@ -558,10 +245,9 @@ class AppComponent extends React.Component {
 			<SearchBar
 	      		searchQueryURLFormatter={queryFormat}
 	  		 	resultMapper={mapperFunction}
-	  		 	showImage={true}
+	  		 	showImage={false}
 	  		 	circularImage={true}
-	  		 	showSearchButton={{ show: true, mapperFunction: buttonTargetMapper }}
-	  		 	customLoadingBarGenerator={customLoadingBarGenerator}
+	  		 	searchButton={{ show: false, onButtonClick: onClickButton }}
 	  		 	searchDelay={400} />
       	</div>
       </div>
@@ -571,16 +257,8 @@ class AppComponent extends React.Component {
 
 export default AppComponent;
 
-
-	  		 	// customButtonGenerator={{ show: true, mapperFunction: function(){}, customButtonGenerator: customButtonGenerator }}
-
 //TODO
-// move baseurl into formatter
-// add search button query
-// add custom search button
-// add support for custom search bar
 // add support for custom error message
-// add support for custom loading bar
 // add support for class overrides
 // add on click function to read me of custom result
 // add theme option material theme, bootstrap theme
