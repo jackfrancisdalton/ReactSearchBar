@@ -65,50 +65,9 @@ class SearchResult extends React.Component {
 	}
 }
 
-class CustomSearchButton extends React.Component {
-	constructor(props) {
-		super(props)
-	}
-
-	render() {
-		return(
-			<div>button</div>
-		)
-	}
-}
-
-class CustomLoadingCircle extends React.Component {
-	constructor(props) {
-		super(props)
-	}
-
-	render() {
-		return(
-			<div>LOADING...</div>
-		)
-	}
-}
-
-class BasicSearchResult extends React.Component {
-	constructor(props) {
-		super(props)
-	}
-
-	render() {
-		return(
-			<a href={this.props.targetURL} onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}>
-				<div>{this.props.title} - {this.props.isSelected.toString()}</div>
-			</a>
-		)
-	}
-}
 
 
 export {
 	NoResult,
 	SearchResult,
-	
-	CustomSearchButton,
-	CustomLoadingCircle,
-	BasicSearchResult,
 }

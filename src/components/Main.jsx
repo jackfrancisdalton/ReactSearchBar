@@ -10,18 +10,15 @@ import ComponentFunctions from './ComponentFunctions.jsx'
 import {
 	NoResult,
 	SearchResult,
-	CustomSearchButton,
-	CustomLoadingCircle,
-	BasicSearchResult,
 } from './ChildComponents.jsx'
 
 import {
 	mapperFunction,
 	queryFormat,
 	customBoxGenerator,
-	customButtonGenerator,
+	customLoadingBarGenerator,
+	searchBarProducer,
 	onClickButton,
-	customLoadingBarGenerator
 } from './ExampleImplementation.jsx'
 
 class SearchBar extends React.Component {
@@ -43,6 +40,8 @@ class SearchBar extends React.Component {
 		this.onResultClicked = this.onResultClicked.bind(this)
 		this.setWrapperRef = this.setWrapperRef.bind(this)
 		this.handleClickOutside = this.handleClickOutside.bind(this)
+		this.generateCustomResultsDOM = this.generateCustomResultsDOM.bind(this)
+		this.generateResultsDOM = this.generateResultsDOM.bind(this)
 	}
 
 	// Set default values
@@ -52,6 +51,7 @@ class SearchBar extends React.Component {
 		searchDelay: 300,
 		resultsToDisplay: 6,
 		showImage: false,
+		searchButton: { show: false },
 		customResultComponentProducer: null,
 		errorMessage: 'No Results Found'
 	}
@@ -70,14 +70,17 @@ class SearchBar extends React.Component {
     }
 
 	handleKeyDown(e) {
+		console.log("KEYDOWN")
 		ComponentFunctions.handleKeyDown(this, e)	
 	}
 
 	onFocus(e) {
+		console.log("FOCUS")
 		ComponentFunctions.onFocus(this, e)
 	}
 
 	onType(e) {
+		console.log("TYPE")
 		ComponentFunctions.onType(this, e)
 	}
 
@@ -108,69 +111,77 @@ class SearchBar extends React.Component {
         }
     }
 
+    generateResultsDOM() {
+    	let self = this;
+		let results = [];
+
+		// loop through results and generate component for each result and assign to results
+		this.state.resultSet.forEach(function(item, idx) {
+
+			// if the current result index is more than the desired amount, do not render a componenet
+			if(self.props.resultsToDisplay > idx) {
+
+				//calculate if the result is selected
+				let isSelected = ((self.state.selectedResult == idx) ? true : false)
+				results.push(
+					<SearchResult key={idx}
+						keyRef={idx} 
+						title={item.title}
+						targetURL={item.targetURL}
+						imageURL={item.imageURL}
+						showImage={self.props.showImage}
+						onHoverSelect={self.onHoverSetSelected}
+						isSelected={isSelected}
+						onClick={self.onResultClicked}
+						useNavLink={self.props.useNavLink}
+						isCircleImage={self.props.circularImage}/>
+				)
+			}
+		});
+
+		return results;
+    }
+
+    generateCustomResultsDOM() {
+    	let self = this;
+		let results = [];
+
+		this.state.resultSet.forEach(function(item, idx) {
+			if(self.props.resultsToDisplay > idx) {
+				let isSelected = ((self.state.selectedResult == idx) ? true : false)
+				let customDOMResult = self.props.customResultComponentProducer(idx, item)
+				
+				// appened extra functions and props
+				customDOMResult = React.cloneElement(customDOMResult, {
+					key: idx,
+					keyRef: idx,
+					isSelected: isSelected,
+					onHoverSelect: self.onHoverSetSelected
+				});
+
+				results.push(customDOMResult);
+			}
+		})
+
+		return results;
+    }
+
 	render() {
 		let self = this;
 		let results = [];
 
-		// If results are found
+		// If results are found generate the result display boxes
 		if(this.state.resultSet != null) {
 
 			// if custom result generator found
-			if(!this.props.customResultComponentProducer) {
-				
-				// loop through results and generate component for each result and assign to results
-				this.state.resultSet.forEach(function(item, idx) {
-
-					// if the current result index is more than the desired amount, do not render a componenet
-					if(self.props.resultsToDisplay > idx) {
-
-						//calculate if the result is selected
-						let isSelected = ((self.state.selectedResult == idx) ? true : false)
-						results.push(
-							<SearchResult key={idx}
-								keyRef={idx} 
-								title={item.title}
-								targetURL={item.targetURL}
-								imageURL={item.imageURL}
-								showImage={self.props.showImage}
-								onHoverSelect={self.onHoverSetSelected}
-								isSelected={isSelected}
-								onClick={self.onResultClicked}
-								useNavLink={self.props.useNavLink}
-								isCircleImage={self.props.circularImage}/>
-						)
-					}
-				})
+			if(this.props.customResultComponentProducer) {
+				results = this.generateCustomResultsDOM()
 			} else {
-
-				// loop through results and generate component for each result and assign to results
-				this.state.resultSet.forEach(function(item, idx) {
-					if(self.props.resultsToDisplay > idx) {
-						let isSelected = ((self.state.selectedResult == idx) ? true : false)
-						let customDOMResult = self.props.customResultComponentProducer(idx, item)
-						
-						// appened extra functions and props
-						customDOMResult = React.cloneElement(customDOMResult,
-							{
-								key: idx,
-								keyRef: idx,
-								isSelected: isSelected,
-								onHoverSelect: self.onHoverSetSelected
-							}
-						);
-
-						results.push(customDOMResult);
-					}
-				})
+				results = this.generateResultsDOM()
 			}
 		}
 
-		if(results != null) {
-			if(results.length <= 0 && !this.state.resultsLoading) {
-				results = (<NoResult message={this.props.errorMessage} />)
-			}
-		}
-
+		// If a loading bar is supplied overwrite the out-of-box Component
 		let loadingBar
 		if(this.props.customLoadingBarProducer) {
 			loadingBar = this.props.customLoadingBarProducer()
@@ -186,37 +197,50 @@ class SearchBar extends React.Component {
 			)
 		}
 		
-		let searchButton
-		if(this.props.customButtonProducer) {
-			searchButton = this.props.customButtonProducer()
+		// Generate button DOM
+		let searchButton = (
+			<button onClick={(event) => this.props.searchButton.onButtonClick(event)} className='search-button'>
+				<svg className="search-icon" fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+				    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+				    <path d="M0 0h24v24H0z" fill="none"/>
+				</svg>
+			</button>
+		)
+		
+
+		let searchBarDOM
+		if(this.props.customSearchBar) {
+			searchBarDOM = this.props.customSearchBar(this, this.state.searchQuery, this.handleKeyDown, this.onFocus, this.onType);
 		} else {
-			searchButton = (
-				<button onClick={(event) => this.props.searchButton.onButtonClick(event)} className='search-button'>
-					<svg className="search-icon" fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-					    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-					    <path d="M0 0h24v24H0z" fill="none"/>
-					</svg>
-				</button>
-			)
+			searchBarDOM = (
+				<div className='search-input-container'>
+						<form className="search-input">
+							<div className={'text-input-wrapper' + (this.props.searchButton.show ? ""  : " full-width")}>
+								<input type='text'
+									value={this.state.searchQuery}
+									onKeyDown={this.handleKeyDown}
+									onFocus={this.onFocus}
+									onChange={this.onType}
+									className='search-input-text' />
+							</div>
+							{this.props.searchButton.show &&
+								searchButton
+							}
+						</form>
+				</div>
+			);
+		}
+
+		// If no results are found display "NO RESULTS FOUND"
+		if(results != null) {
+			if(results.length <= 0 && !this.state.resultsLoading) {
+				results = (<NoResult message={this.props.errorMessage} />)
+			}
 		}
 
 		return (
 			<div className='search-bar-container' ref={this.setWrapperRef}>
-				<div className='search-input-container'>
-					<form className="search-input">
-						<div className='text-input-wrapper'>
-							<input type='text'
-								value={this.state.searchQuery}
-								onKeyDown={this.handleKeyDown}
-								onFocus={this.onFocus}
-								onChange={this.onType}
-								className='search-input-text' />
-						</div>
-						{this.props.searchButton.show &&
-							searchButton
-						}
-					</form>
-				</div>
+				{searchBarDOM}
 				{this.state.isActive &&
 					<div className='drop-down-container'>
 						<div className='drop-down'>
@@ -245,9 +269,10 @@ class AppComponent extends React.Component {
 			<SearchBar
 	      		searchQueryURLFormatter={queryFormat}
 	  		 	resultMapper={mapperFunction}
-	  		 	showImage={false}
+	  		 	showImage={true}
 	  		 	circularImage={true}
-	  		 	searchButton={{ show: false, onButtonClick: onClickButton }}
+	  		 	customSearchBar={searchBarProducer}
+	  		 	searchButton={{ show: true, onButtonClick: onClickButton }}
 	  		 	searchDelay={400} />
       	</div>
       </div>
@@ -258,6 +283,7 @@ class AppComponent extends React.Component {
 export default AppComponent;
 
 //TODO
+// remove custom button (process moved to button bar)
 // add support for custom error message
 // add support for class overrides
 // add on click function to read me of custom result
