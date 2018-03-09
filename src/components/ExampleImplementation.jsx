@@ -72,7 +72,7 @@ class CustomSearchBar extends React.Component {
 //======================= Props to pass to RSB
 
 
-let customBoxGenerator = function(idx, resultJsonItem) {
+let customResultGenerator = function(RSBRef, idx, resultJsonItem) {
 	return(
 		<CustomSearchResult
 			title={resultJsonItem.title}
@@ -81,7 +81,7 @@ let customBoxGenerator = function(idx, resultJsonItem) {
 	)
 }
 
-let customLoadingBarGenerator = function() {
+let customLoadingBarGenerator = function(RSBRef) {
 	return(<CustomLoadingCircle />)
 }
 
@@ -104,13 +104,14 @@ let mapperFunction = function(queryResultJSON) {
 	return formattedObjects;
 }
 
-let onClickButton = function(e) {
+let onClickButton = function(RSBRef, e, searchQuery, extraOptions) {
 	e.preventDefault();
-	console.log("HIT")
+	console.log(searchQuery, extraOptions)
+	console.log("HIT", RSBRef)
 }
 
 // this.state.searchQuery, this.handleKeyDown, this.onFocus, this.onType, this
-let searchBarProducer = function(RSBref, inputTextValue, onKeyDown, onFocus, onChange) {
+let customSearchBarGenerator = function(RSBref, inputTextValue, onKeyDown, onFocus, onChange) {
 	return (
 		<CustomSearchBar 
 			searchValue={inputTextValue}
@@ -129,8 +130,8 @@ let queryFormat = function(searchQuery, extraQueryOptions) {
 export {
 	mapperFunction,
 	queryFormat,
-	customBoxGenerator,
+	customResultGenerator,
 	customLoadingBarGenerator,
-	searchBarProducer,
+	customSearchBarGenerator,
 	onClickButton,
 }

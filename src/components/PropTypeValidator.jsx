@@ -38,6 +38,23 @@ let SearchBarValidation = {
 			return new Error(propName + ' function must have the argument: queryResultJSON (type of JSON)');
 		}
 	},
+
+	// searchButton: function(props, propName, componentName) {
+	// 	let obj = props[propName];
+	// 	console.log(obj)
+
+	// 	// if(obj.onButtonClick) {
+	// 	// 	if(obj.onButtonClick.prototype.constructor.length === 2) {
+	// 	// 		return new Error("onButtonClick must have 2 arguments: e (event), this (RSB component")
+	// 	// 	}
+	// 	// }
+
+
+	// 	// if(obj.show) {
+
+	// 	// }
+
+	// }
 		
 	// Optional Properties
 	customButtonProducer: function(props, propName, componentName) {

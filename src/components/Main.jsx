@@ -15,9 +15,9 @@ import {
 import {
 	mapperFunction,
 	queryFormat,
-	customBoxGenerator,
+	customResultGenerator,
 	customLoadingBarGenerator,
-	searchBarProducer,
+	customSearchBarGenerator,
 	onClickButton,
 } from './ExampleImplementation.jsx'
 
@@ -149,7 +149,7 @@ class SearchBar extends React.Component {
 		this.state.resultSet.forEach(function(item, idx) {
 			if(self.props.resultsToDisplay > idx) {
 				let isSelected = ((self.state.selectedResult == idx) ? true : false)
-				let customDOMResult = self.props.customResultComponentProducer(idx, item)
+				let customDOMResult = self.props.customResultsProducer(self, idx, item)
 				
 				// appened extra functions and props
 				customDOMResult = React.cloneElement(customDOMResult, {
@@ -174,7 +174,7 @@ class SearchBar extends React.Component {
 		if(this.state.resultSet != null) {
 
 			// if custom result generator found
-			if(this.props.customResultComponentProducer) {
+			if(this.props.customResultsProducer) {
 				results = this.generateCustomResultsDOM()
 			} else {
 				results = this.generateResultsDOM()
@@ -184,7 +184,7 @@ class SearchBar extends React.Component {
 		// If a loading bar is supplied overwrite the out-of-box Component
 		let loadingBar
 		if(this.props.customLoadingBarProducer) {
-			loadingBar = this.props.customLoadingBarProducer()
+			loadingBar = this.props.customLoadingBarProducer(self)
 		} else {
 			loadingBar = (
 				<div className='loading-results-cover'>
@@ -199,7 +199,14 @@ class SearchBar extends React.Component {
 		
 		// Generate button DOM
 		let searchButton = (
-			<button onClick={(event) => this.props.searchButton.onButtonClick(event)} className='search-button'>
+			<button onClick={
+				(event) => this.props.searchButton.onButtonClick(
+					self,
+					event, 
+					self.state.searchQuery, 
+					self.props.extraOptions,
+				)
+			} className='search-button'>
 				<svg className="search-icon" fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
 				    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
 				    <path d="M0 0h24v24H0z" fill="none"/>
@@ -209,8 +216,8 @@ class SearchBar extends React.Component {
 		
 
 		let searchBarDOM
-		if(this.props.customSearchBar) {
-			searchBarDOM = this.props.customSearchBar(this, this.state.searchQuery, this.handleKeyDown, this.onFocus, this.onType);
+		if(this.props.customSearchBarProducer) {
+			searchBarDOM = this.props.customSearchBarProducer(this, this.state.searchQuery, this.handleKeyDown, this.onFocus, this.onType);
 		} else {
 			searchBarDOM = (
 				<div className='search-input-container'>
@@ -263,24 +270,79 @@ SearchBar.propTypes = PropTypeValidator
 
 class AppComponent extends React.Component {
   render() {
-    return (
-      <div className='index'>
-      	<div className='container'>
-			<SearchBar
-	      		searchQueryURLFormatter={queryFormat}
-	  		 	resultMapper={mapperFunction}
-	  		 	showImage={true}
-	  		 	circularImage={true}
-	  		 	customSearchBar={searchBarProducer}
-	  		 	searchButton={{ show: true, onButtonClick: onClickButton }}
-	  		 	searchDelay={400} />
-      	</div>
-      </div>
-    );
+  	let version = 1
+
+
+  	if(version == 0) {
+  		return (
+	      <div className='index'>
+	      	<div className='container'>
+				<SearchBar
+		      		searchQueryURLFormatter={queryFormat}
+		  		 	resultMapper={mapperFunction}
+		  		 />
+	      	</div>
+	      </div>
+	    );
+  	} else if(version == 1) {
+  		return (
+	      <div className='index'>
+	      	<div className='container'>
+				<SearchBar
+		      		searchQueryURLFormatter={queryFormat}
+		  		 	resultMapper={mapperFunction}
+					showImage={true}
+					circularImage={true}
+					maxResultsToDisplay={3}
+					searchDelay={400}
+					useNavLink={false}
+					searchButton={{ show: true, onButtonClick: onClickButton }}
+					errorMessage={"NO RESULTS"}
+					extraOptions={{"TEST": "Bob"}}
+		  		 />
+	      	</div>
+	      </div>
+	    );
+  	} else {
+  		return (
+	      <div className='index'>
+	      	<div className='container'>
+				<SearchBar
+		      		searchQueryURLFormatter={queryFormat}
+		  		 	resultMapper={mapperFunction}
+		  		 	customSearchBarProducer={customSearchBarGenerator}
+		  		 	customResultsProducer={customResultGenerator}
+		  		 	customLoadingBarProducer={customLoadingBarGenerator}
+		  		 />
+	      	</div>
+	      </div>
+	    );
+  	}
   }
 }
 
 export default AppComponent;
+
+	// ======== Mandatory Porperties
+	// searchQueryURLFormatter
+	// resultMapper 
+	
+	// ======== Optional
+	// showImage
+	// circularImage
+	// maxResultsToDisplay
+	// searchDelay 
+	// useNavLink
+	// errorMessage
+	// extraOptions
+	// searchButton
+
+
+	// ========= Custom options
+	// customSearchBarProducer 
+	// customResultsProducer
+	// customLoadingBarProducer 
+	// customNoResultProducer
 
 //TODO
 // remove custom button (process moved to button bar)
