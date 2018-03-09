@@ -17,6 +17,7 @@ import {
 	queryFormat,
 	customResultGenerator,
 	customLoadingBarGenerator,
+	customNoResultProducer,
 	customSearchBarGenerator,
 	onClickButton,
 } from './ExampleImplementation.jsx'
@@ -191,7 +192,7 @@ class SearchBar extends React.Component {
 		if(results != null) {
 			if(results.length <= 0 && !this.state.resultsLoading) {
 				if(this.props.customNoResultProducer) {
-					results = this.props.customNoResultProducer()
+					results = this.props.customNoResultProducer(self)
 				} else {
 					results = (<NoResult message={this.props.errorMessage} />)
 				}
@@ -219,21 +220,7 @@ class SearchBar extends React.Component {
 }
 SearchBar.propTypes = PropTypeValidator
 
-class CustomNoResult extends React.Component {
-	constructor(props) {
-		super(props)
-	}
 
-	render() {
-		return(
-			<div>no resultass</div>
-		)
-	}
-}
-
-let test = function(self) {
-	return (<CustomNoResult />)
-}
 
 class AppComponent extends React.Component {
   render() {
@@ -279,7 +266,7 @@ class AppComponent extends React.Component {
 		  		 	customSearchBarProducer={customSearchBarGenerator}
 		  		 	customResultsProducer={customResultGenerator}
 		  		 	customLoadingBarProducer={customLoadingBarGenerator}
-		  		 	customNoResultProducer={test}
+		  		 	customNoResultProducer={customNoResultProducer}
 		  		 />
 	      	</div>
 	      </div>

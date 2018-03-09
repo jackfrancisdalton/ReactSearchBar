@@ -68,6 +68,18 @@ class CustomSearchBar extends React.Component {
 	}
 }
 
+class CustomNoResult extends React.Component {
+	constructor(props) {
+		super(props)
+	}
+
+	render() {
+		return(
+			<div>no resultass</div>
+		)
+	}
+}
+
 //======================= Props to pass to RSB
 
 
@@ -83,6 +95,29 @@ let customResultGenerator = function(RSBRef, idx, resultJsonItem) {
 let customLoadingBarGenerator = function(RSBRef) {
 	return(<CustomLoadingCircle />)
 }
+
+let customNoResultProducer = function(self) {
+	return (<CustomNoResult />)
+}
+
+// this.state.searchQuery, this.handleKeyDown, this.onFocus, this.onType, this
+let customSearchBarGenerator = function(RSBref, inputTextValue, onKeyDown, onFocus, onChange) {
+	return (
+		<CustomSearchBar 
+			searchValue={inputTextValue}
+			onKeyDown={onKeyDown}
+			onFocus={onFocus}
+			onChange={onChange}
+		/>
+	)
+}
+
+let onClickButton = function(RSBRef, e, searchQuery, extraOptions) {
+	e.preventDefault();
+	console.log(searchQuery, extraOptions)
+	console.log("HIT", RSBRef)
+}
+
 
 let mapperFunction = function(queryResultJSON) {
 	let formattedObjects = [];
@@ -105,24 +140,6 @@ let mapperFunction = function(queryResultJSON) {
 	return formattedObjects;
 }
 
-let onClickButton = function(RSBRef, e, searchQuery, extraOptions) {
-	e.preventDefault();
-	console.log(searchQuery, extraOptions)
-	console.log("HIT", RSBRef)
-}
-
-// this.state.searchQuery, this.handleKeyDown, this.onFocus, this.onType, this
-let customSearchBarGenerator = function(RSBref, inputTextValue, onKeyDown, onFocus, onChange) {
-	return (
-		<CustomSearchBar 
-			searchValue={inputTextValue}
-			onKeyDown={onKeyDown}
-			onFocus={onFocus}
-			onChange={onChange}
-		/>
-	)
-}
-
 let queryFormat = function(searchQuery, extraQueryOptions) {
 	let URLBase = 'http://www.localhost:3030/groupss'
 	return URLBase;
@@ -133,6 +150,7 @@ export {
 	queryFormat,
 	customResultGenerator,
 	customLoadingBarGenerator,
+	customNoResultProducer,
 	customSearchBarGenerator,
 	onClickButton,
 }
