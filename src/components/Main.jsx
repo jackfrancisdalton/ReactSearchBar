@@ -70,17 +70,14 @@ class SearchBar extends React.Component {
     }
 
 	handleKeyDown(e) {
-		console.log("KEYDOWN")
 		ComponentFunctions.handleKeyDown(this, e)	
 	}
 
 	onFocus(e) {
-		console.log("FOCUS")
 		ComponentFunctions.onFocus(this, e)
 	}
 
 	onType(e) {
-		console.log("TYPE")
 		ComponentFunctions.onType(this, e)
 	}
 
@@ -103,7 +100,6 @@ class SearchBar extends React.Component {
     }
 
     handleClickOutside(event) {
-    	// if the drop down is active, and the mouse clicks off of the results hide the results
         if(this.state.isActive) {
 	        if (this.wrapperRef && !this.wrapperRef.contains(event.target)) {
 	     		this.setState({ isActive: false })
@@ -112,58 +108,11 @@ class SearchBar extends React.Component {
     }
 
     generateResultsDOM() {
-    	let self = this;
-		let results = [];
-
-		// loop through results and generate component for each result and assign to results
-		this.state.resultSet.forEach(function(item, idx) {
-
-			// if the current result index is more than the desired amount, do not render a componenet
-			if(self.props.resultsToDisplay > idx) {
-
-				//calculate if the result is selected
-				let isSelected = ((self.state.selectedResult == idx) ? true : false)
-				results.push(
-					<SearchResult key={idx}
-						keyRef={idx} 
-						title={item.title}
-						targetURL={item.targetURL}
-						imageURL={item.imageURL}
-						showImage={self.props.showImage}
-						onHoverSelect={self.onHoverSetSelected}
-						isSelected={isSelected}
-						onClick={self.onResultClicked}
-						useNavLink={self.props.useNavLink}
-						isCircleImage={self.props.circularImage}/>
-				)
-			}
-		});
-
-		return results;
+    	return ComponentFunctions.generateResults(this)
     }
 
     generateCustomResultsDOM() {
-    	let self = this;
-		let results = [];
-
-		this.state.resultSet.forEach(function(item, idx) {
-			if(self.props.resultsToDisplay > idx) {
-				let isSelected = ((self.state.selectedResult == idx) ? true : false)
-				let customDOMResult = self.props.customResultsProducer(self, idx, item)
-				
-				// appened extra functions and props
-				customDOMResult = React.cloneElement(customDOMResult, {
-					key: idx,
-					keyRef: idx,
-					isSelected: isSelected,
-					onHoverSelect: self.onHoverSetSelected
-				});
-
-				results.push(customDOMResult);
-			}
-		})
-
-		return results;
+    	return ComponentFunctions.generateCustomResults(this)
     }
 
 	render() {
@@ -264,13 +213,11 @@ class SearchBar extends React.Component {
 		);
 	}
 }
-
-// Property Validation
 SearchBar.propTypes = PropTypeValidator
 
 class AppComponent extends React.Component {
   render() {
-  	let version = 1
+  	let version = 2
 
 
   	if(version == 0) {
@@ -323,6 +270,18 @@ class AppComponent extends React.Component {
 
 export default AppComponent;
 
+// readme:
+// RSB aims to acheive two things:
+// - offer an out-of-the-box solution for a comprehensive predictive saerch box
+// - work as a framework for handling request, and interactions, whilst allowing you to use your own bespoke react componenets
+
+// required
+
+// optional
+
+// custom components
+
+
 	// ======== Mandatory Porperties
 	// searchQueryURLFormatter
 	// resultMapper 
@@ -337,7 +296,6 @@ export default AppComponent;
 	// extraOptions
 	// searchButton
 
-
 	// ========= Custom options
 	// customSearchBarProducer 
 	// customResultsProducer
@@ -345,7 +303,7 @@ export default AppComponent;
 	// customNoResultProducer
 
 //TODO
-// remove custom button (process moved to button bar)
+// move application to seperate file called "test"
 // add support for custom error message
 // add support for class overrides
 // add on click function to read me of custom result

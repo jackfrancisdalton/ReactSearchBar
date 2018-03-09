@@ -1,3 +1,6 @@
+import React from 'react'
+import { NavLink } from 'react-router-dom';
+import { NoResult, SearchResult } from './ChildComponents.jsx'
 
 const handleKeyDown = function(self, e) {
 	if(!self.state.resultsLoading) {
@@ -144,8 +147,65 @@ const onType = function(self, e) {
 }
 
 
+const generateResults = function(self) {
+		let selfRef = self;
+		let results = [];
+
+		// loop through results and generate component for each result and assign to results
+		self.state.resultSet.forEach(function(item, idx) {
+
+			// if the current result index is more than the desired amount, do not render a componenet
+			if(selfRef.props.resultsToDisplay > idx) {
+
+				//calculate if the result is selected
+				let isSelected = ((selfRef.state.selectedResult == idx) ? true : false)
+				results.push(
+					<SearchResult key={idx}
+						keyRef={idx} 
+						title={item.title}
+						targetURL={item.targetURL}
+						imageURL={item.imageURL}
+						showImage={selfRef.props.showImage}
+						onHoverSelect={selfRef.onHoverSetSelected}
+						isSelected={isSelected}
+						onClick={selfRef.onResultClicked}
+						useNavLink={selfRef.props.useNavLink}
+						isCircleImage={selfRef.props.circularImage}/>
+				)
+			}
+		});
+
+		return results;
+}
+
+const generateCustomResults = function (self) {
+	let selfRef = self;
+	let results = [];
+
+	self.state.resultSet.forEach(function(item, idx) {
+		if(selfRef.props.resultsToDisplay > idx) {
+			let isSelected = ((selfRef.state.selectedResult == idx) ? true : false)
+			let customDOMResult = selfRef.props.customResultsProducer(selfRef, idx, item)
+			
+			// appened extra functions and props
+			customDOMResult = React.cloneElement(customDOMResult, {
+				key: idx,
+				keyRef: idx,
+				isSelected: isSelected,
+				onHoverSelect: selfRef.onHoverSetSelected
+			});
+
+			results.push(customDOMResult);
+		}
+	})
+
+	return results;
+}
+
 export default {
 	handleKeyDown,
 	onFocus,
-	onType
+	onType,
+	generateResults,
+	generateCustomResults
 }

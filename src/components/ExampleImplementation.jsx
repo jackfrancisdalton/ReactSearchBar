@@ -1,8 +1,6 @@
 import React from 'react'
-import {
-	NoResult,
-	SearchResult,
-} from './ChildComponents.jsx'
+import { NavLink } from 'react-router-dom';
+import { NoResult, SearchResult } from './ChildComponents.jsx'
 
 //======================= Define custom elements
 
