@@ -1,7 +1,8 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom';
 import { NoResult, SearchResult } from './ChildComponents.jsx'
-
+import { isEmptyObject } from './Utility.jsx'
+ 
 //======================= Define custom elements
 
 class CustomSearchButton extends React.Component {
@@ -86,18 +87,20 @@ let customLoadingBarGenerator = function(RSBRef) {
 let mapperFunction = function(queryResultJSON) {
 	let formattedObjects = [];
 	
-	queryResultJSON.forEach(function(item, idx) {
-		let hasAnyFields = (Object.keys(item).length !== 0)
-		let isObject = (item.constructor === Object)
+	if(!isEmptyObject(queryResultJSON)) {
+		queryResultJSON.forEach(function(item, idx) {
+			let hasAnyFields = (Object.keys(item).length !== 0)
+			let isObject = (item.constructor === Object)
 
-		if(hasAnyFields && isObject) {
-			let newObject = {};
-			newObject.title = item.groupName;
-			newObject.imageURL = item.imgURL;
-			newObject.targetURL = item.targetURL;
-			formattedObjects.push(newObject);
-		}
-	});
+			if(hasAnyFields && isObject) {
+				let newObject = {};
+				newObject.title = item.groupName;
+				newObject.imageURL = item.imgURL;
+				newObject.targetURL = item.targetURL;
+				formattedObjects.push(newObject);
+			}
+		});
+	}
 
 	return formattedObjects;
 }
@@ -121,7 +124,7 @@ let customSearchBarGenerator = function(RSBref, inputTextValue, onKeyDown, onFoc
 }
 
 let queryFormat = function(searchQuery, extraQueryOptions) {
-	let URLBase = 'http://www.localhost:3030/groups'
+	let URLBase = 'http://www.localhost:3030/groupss'
 	return URLBase;
 }
 

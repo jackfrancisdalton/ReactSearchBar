@@ -190,7 +190,11 @@ class SearchBar extends React.Component {
 		// If no results are found display "NO RESULTS FOUND"
 		if(results != null) {
 			if(results.length <= 0 && !this.state.resultsLoading) {
-				results = (<NoResult message={this.props.errorMessage} />)
+				if(this.props.customNoResultProducer) {
+					results = this.props.customNoResultProducer()
+				} else {
+					results = (<NoResult message={this.props.errorMessage} />)
+				}
 			}
 		}
 
@@ -215,10 +219,25 @@ class SearchBar extends React.Component {
 }
 SearchBar.propTypes = PropTypeValidator
 
+class CustomNoResult extends React.Component {
+	constructor(props) {
+		super(props)
+	}
+
+	render() {
+		return(
+			<div>no resultass</div>
+		)
+	}
+}
+
+let test = function(self) {
+	return (<CustomNoResult />)
+}
+
 class AppComponent extends React.Component {
   render() {
   	let version = 2
-
 
   	if(version == 0) {
   		return (
@@ -260,6 +279,7 @@ class AppComponent extends React.Component {
 		  		 	customSearchBarProducer={customSearchBarGenerator}
 		  		 	customResultsProducer={customResultGenerator}
 		  		 	customLoadingBarProducer={customLoadingBarGenerator}
+		  		 	customNoResultProducer={test}
 		  		 />
 	      	</div>
 	      </div>
