@@ -1,6 +1,5 @@
 require('normalize.css/normalize.css');
-require('styles/App.sass');
-
+import styles from 'styles/App.sass'
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import PropTypeValidator from './PropTypeValidator.jsx'
@@ -54,7 +53,7 @@ class SearchBar extends React.Component {
 		showImage: false,
 		searchButton: { show: false },
 		customResultComponentProducer: null,
-		errorMessage: 'No Results Found'
+		noResultsMessage: 'No Results Found'
 	}
 
 	componentWillMount() {
@@ -122,8 +121,6 @@ class SearchBar extends React.Component {
 
 		// If results are found generate the result display boxes
 		if(this.state.resultSet != null) {
-
-			// if custom result generator found
 			if(this.props.customResultsProducer) {
 				results = this.generateCustomResultsDOM()
 			} else {
@@ -137,32 +134,15 @@ class SearchBar extends React.Component {
 			loadingBar = this.props.customLoadingBarProducer(self)
 		} else {
 			loadingBar = (
-				<div className='loading-results-cover'>
-					<div className='position-container'>
-						<div className='positioner'>
-							<div className='loading-animation'></div>
+				<div id="loading-results-cover" className='loading-results-cover'>
+					<div id="position-container" className='position-container'>
+						<div id="positioner" className='positioner'>
+							<div id="loading-animation" className='loading-animation'></div>
 						</div>
 					</div>
 				</div>
 			)
 		}
-		
-		// Generate button DOM
-		let searchButton = (
-			<button onClick={
-				(event) => this.props.searchButton.onButtonClick(
-					self,
-					event, 
-					self.state.searchQuery, 
-					self.props.extraOptions,
-				)
-			} className='search-button'>
-				<svg className="search-icon" fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
-				    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-				    <path d="M0 0h24v24H0z" fill="none"/>
-				</svg>
-			</button>
-		)
 		
 
 		let searchBarDOM
@@ -174,14 +154,27 @@ class SearchBar extends React.Component {
 						<form className="search-input">
 							<div className={'text-input-wrapper' + (this.props.searchButton.show ? ""  : " full-width")}>
 								<input type='text'
+									id='search-input-text'
+									className='search-input-text'
 									value={this.state.searchQuery}
 									onKeyDown={this.handleKeyDown}
 									onFocus={this.onFocus}
-									onChange={this.onType}
-									className='search-input-text' />
+									onChange={this.onType} />
 							</div>
 							{this.props.searchButton.show &&
-								searchButton
+								<button onClick={
+									(event) => this.props.searchButton.onButtonClick(
+										self,
+										event, 
+										self.state.searchQuery, 
+										self.props.extraOptions,
+									)
+								} className='search-button' id="search-button">
+									<svg className="search-icon" fill="#000000" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+									    <path className="search-path" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+									    <path className="background-path" d="M0 0h24v24H0z" fill="none"/>
+									</svg>
+								</button>
 							}
 						</form>
 				</div>
@@ -194,13 +187,13 @@ class SearchBar extends React.Component {
 				if(this.props.customNoResultProducer) {
 					results = this.props.customNoResultProducer(self)
 				} else {
-					results = (<NoResult message={this.props.errorMessage} />)
+					results = (<NoResult message={this.props.noResultsMessage} />)
 				}
 			}
 		}
 
 		return (
-			<div className='search-bar-container' ref={this.setWrapperRef}>
+			<div className={'search-bar-container'} ref={this.setWrapperRef}>
 				{searchBarDOM}
 				{this.state.isActive &&
 					<div className='drop-down-container'>
@@ -224,7 +217,7 @@ SearchBar.propTypes = PropTypeValidator
 
 class AppComponent extends React.Component {
   render() {
-  	let version = 2
+  	let version = 1
 
   	if(version == 0) {
   		return (
@@ -250,7 +243,7 @@ class AppComponent extends React.Component {
 					searchDelay={400}
 					useNavLink={false}
 					searchButton={{ show: true, onButtonClick: onClickButton }}
-					errorMessage={"NO RESULTS"}
+					noResultsMessage={"NO RESULTS"}
 					extraOptions={{"TEST": "Bob"}}
 		  		 />
 	      	</div>
@@ -299,7 +292,7 @@ export default AppComponent;
 	// maxResultsToDisplay
 	// searchDelay 
 	// useNavLink
-	// errorMessage
+	// noResultsMessage
 	// extraOptions
 	// searchButton
 

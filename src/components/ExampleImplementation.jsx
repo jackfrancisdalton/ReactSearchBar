@@ -5,18 +5,6 @@ import { isEmptyObject } from './Utility.jsx'
  
 //======================= Define custom elements
 
-class CustomSearchButton extends React.Component {
-	constructor(props) {
-		super(props)
-	}
-
-	render() {
-		return(
-			<div>button</div>
-		)
-	}
-}
-
 class CustomLoadingCircle extends React.Component {
 	constructor(props) {
 		super(props)
@@ -44,11 +32,6 @@ class CustomSearchResult extends React.Component {
 }
 
 class CustomSearchBar extends React.Component {
-	constructor(props) {
-		super(props)
-	}
-
-
 	render() {
 		return(
 			<div>
@@ -61,7 +44,7 @@ class CustomSearchBar extends React.Component {
 							onChange={this.props.onChange}
 							className='search-input-text' />
 					</div>
-					<button>SEARCH</button>
+					<button>Search Now</button>
 				</form>
 			</div>
 		)
@@ -92,16 +75,16 @@ let customResultGenerator = function(RSBRef, idx, resultJsonItem) {
 	)
 }
 
-let customLoadingBarGenerator = function(RSBRef) {
+let customLoadingBarGenerator = function(RSB) {
 	return(<CustomLoadingCircle />)
 }
 
-let customNoResultProducer = function(self) {
+let customNoResultProducer = function(RSB) {
 	return (<CustomNoResult />)
 }
 
 // this.state.searchQuery, this.handleKeyDown, this.onFocus, this.onType, this
-let customSearchBarGenerator = function(RSBref, inputTextValue, onKeyDown, onFocus, onChange) {
+let customSearchBarGenerator = function(RSB, inputTextValue, onKeyDown, onFocus, onChange) {
 	return (
 		<CustomSearchBar 
 			searchValue={inputTextValue}
@@ -140,8 +123,8 @@ let mapperFunction = function(queryResultJSON) {
 	return formattedObjects;
 }
 
-let queryFormat = function(searchQuery, extraQueryOptions) {
-	let URLBase = 'http://www.localhost:3030/groupss'
+let queryFormat = function(RSB, searchQuery, extraQueryOptions) {
+	let URLBase = 'http://www.localhost:3030/groups'
 	return URLBase;
 }
 
