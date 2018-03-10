@@ -2,7 +2,7 @@ require('normalize.css/normalize.css');
 import styles from 'styles/App.sass'
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import PropTypeValidator from './PropTypeValidator.jsx'
+import PropValidator from './PropValidator.jsx'
 
 import ComponentFunctions from './ComponentFunctions.jsx'
 
@@ -19,7 +19,7 @@ import {
 	customNoResultProducer,
 	customSearchBarGenerator,
 	onClickButton,
-} from './ExampleImplementation.jsx'
+} from './Example.jsx'
 
 class SearchBar extends React.Component {
 	constructor(props) {
@@ -52,8 +52,7 @@ class SearchBar extends React.Component {
 		resultsToDisplay: 6,
 		showImage: false,
 		searchButton: { show: false },
-		customResultComponentProducer: null,
-		noResultsMessage: 'No Results Found'
+		noResultsMessage: 'No Results Found',
 	}
 
 	componentWillMount() {
@@ -151,9 +150,10 @@ class SearchBar extends React.Component {
 		} else {
 			searchBarDOM = (
 				<div className='search-input-container'>
-						<form className="search-input">
+						<form className="search-input" autoComplete="off">
 							<div className={'text-input-wrapper' + (this.props.searchButton.show ? ""  : " full-width")}>
 								<input type='text'
+									autoComplete='off'
 									id='search-input-text'
 									className='search-input-text'
 									value={this.state.searchQuery}
@@ -185,6 +185,7 @@ class SearchBar extends React.Component {
 		if(results != null) {
 			if(results.length <= 0 && !this.state.resultsLoading) {
 				if(this.props.customNoResultProducer) {
+
 					results = this.props.customNoResultProducer(self)
 				} else {
 					results = (<NoResult message={this.props.noResultsMessage} />)
@@ -211,13 +212,13 @@ class SearchBar extends React.Component {
 		);
 	}
 }
-SearchBar.propTypes = PropTypeValidator
+SearchBar.propTypes = PropValidator
 
 
 
 class AppComponent extends React.Component {
   render() {
-  	let version = 1
+  	let version = 2
 
   	if(version == 0) {
   		return (

@@ -1,4 +1,5 @@
 import React from 'react'
+import axios from 'axios'
 import { NavLink } from 'react-router-dom';
 import { NoResult, SearchResult } from './ChildComponents.jsx'
 
@@ -67,9 +68,33 @@ const handleKeyDown = function(self, e) {
 	}
 }
 
+const resultFetch = function (self, finalSearchURL, isActive) {
+	self.timeouts.push(setTimeout(function() {
+		if(isActive) {
+ 			let promise = axios.get(finalSearchURL)
+				.then(response => response.data)
+				.then(data => {
+					let formattedResults = self.props.resultMapper(self, data)
+
+					self.setState({
+						resultSet: formattedResults,
+						resultsLoading: false,
+						selectedResult: 0
+					});
+				}).catch(function(error) {
+					console.error("error: ", error)
+				})
+		}
+	}, self.props.searchDelay));
+}
+
 const onFocus = function(self, e) {
 	if(self.state.searchQuery.length > 0) {
-		let selfRef = self;
+		let isActive = false;
+
+		if(self.state.searchQuery) {
+			isActive = true;
+		}
 
 		// activaite loading cover on result set
 		self.setState({
@@ -86,24 +111,12 @@ const onFocus = function(self, e) {
 		)
 
 		// make request based on new searchquery
-		self.timeouts.push(setTimeout(function() {
- 			fetch(finalSearchURL)
-				.then(response => response.json())
-				.then(json => {
-					let formattedResults = selfRef.props.resultMapper(json)
-
-					selfRef.setState({
-						resultSet: formattedResults,
-						resultsLoading: false,
-					});
-				})
-		}, self.props.searchDelay));
+		resultFetch(self, finalSearchURL, isActive)
 	}
 }
 
 
 const onType = function(self, e) {
-	let selfRef = self;
 	let searchQuery = e.target.value;
 	let isActive = false;
 
@@ -129,21 +142,7 @@ const onType = function(self, e) {
 	)
 	
 	// make request based on new searchquery
-	self.timeouts.push(setTimeout(function() {
-		if(isActive) {
- 			fetch(finalSearchURL)
-				.then(response => response.json())
-				.then(json => {
-					let formattedResults = selfRef.props.resultMapper(json)
-
-					selfRef.setState({
-						resultSet: formattedResults,
-						resultsLoading: false,
-						selectedResult: 0
-					});
-				})
-		}
-	}, self.props.searchDelay));
+	resultFetch(self, finalSearchURL, isActive)
 }
 
 

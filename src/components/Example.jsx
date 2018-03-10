@@ -95,14 +95,11 @@ let customSearchBarGenerator = function(RSB, inputTextValue, onKeyDown, onFocus,
 	)
 }
 
-let onClickButton = function(RSBRef, e, searchQuery, extraOptions) {
-	e.preventDefault();
-	console.log(searchQuery, extraOptions)
-	console.log("HIT", RSBRef)
+let onClickButton = function(RSBRef, event, searchQuery, extraOptions) {
+	console.log("HIT")
 }
 
-
-let mapperFunction = function(queryResultJSON) {
+let mapperFunction = function(RSB, queryResultJSON) {
 	let formattedObjects = [];
 	
 	if(!isEmptyObject(queryResultJSON)) {
@@ -124,7 +121,7 @@ let mapperFunction = function(queryResultJSON) {
 }
 
 let queryFormat = function(RSB, searchQuery, extraQueryOptions) {
-	let URLBase = 'http://www.localhost:3030/groups'
+	let URLBase = 'http://localhost:3030/groups'
 	return URLBase;
 }
 
