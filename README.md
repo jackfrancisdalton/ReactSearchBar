@@ -61,7 +61,7 @@ When using the out-of-box results component the values you wish to display *must
 
 `resultMapper` must return an array. If nothing is returned from your `resultMapper` an empty array will be assigned as the default value;
 
-*IMPORTANT*: In this example the values are mapped to properties for the out-of-box result component. If you are using `customResultsProducer` please see the explanation [here](####customresultsproducer-implementation), for configuring resultMapper for a custom components.
+*IMPORTANT*: In this example the values are mapped to properties for the out-of-box result component. If you are using `customResultsProducer` please see the explanation [here](#customresultsproducer-implementation), for configuring resultMapper for a custom components.
 
 Example:
 ```javascript
