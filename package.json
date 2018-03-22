@@ -1,8 +1,8 @@
 {
   "name": "react-customisable-search-bar",
   "private": false,
-  "version": "1.0.0",
-  "description": "A customisable =-----------====",
+  "version": "1.0.1",
+  "description": "A customisable react search bar that allows the injection of custom react components",
   "main": "dist/assets/app.js",
   "author": "Jack Francis Dalton",
   "homepage": "https://github.com/jackfrancisdalton/ReactSearchBar",

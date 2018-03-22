@@ -17,7 +17,8 @@ module.exports = {
   output: {
     path: path.join(__dirname, '/../dist/assets'),
     filename: 'app.js',
-    publicPath: defaultSettings.publicPath
+    publicPath: defaultSettings.publicPath,
+    libraryTarget: 'commonjs2'
   },
   devServer: {
     contentBase: './src/',

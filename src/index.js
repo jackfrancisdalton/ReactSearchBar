@@ -1,7 +1,12 @@
-import 'core-js/fn/object/assign';
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './components/Main';
+// import 'core-js/fn/object/assign';
+// import React from 'react';
+// import ReactDOM from 'react-dom';
+// import App from './components/Main';
 
-// Render the main component into the dom
-ReactDOM.render(<App />, document.getElementById('app'));
+// // Render the main component into the dom
+// ReactDOM.render(<App />, document.getElementById('app'));
+
+
+var NotificationHandler = require('./components/Main.jsx');
+
+module.exports = NotificationHandler

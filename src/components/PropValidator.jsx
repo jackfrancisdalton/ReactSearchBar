@@ -26,7 +26,7 @@ let SearchBarValidation = {
 	resultMapper: function(props, propName, componentName) {
 		let fn = props[propName];
 		let isFunction = (typeof fn.prototype.constructor === 'function')
-		let validVariableCount = (fn.prototype.constructor.length === 2)
+		let validVariableCount = (fn.prototype.constructor.length === 3)
 
 		if(!fn.prototype) {
 			throw new Error(propName + ' is a required property')
@@ -37,7 +37,7 @@ let SearchBarValidation = {
 		}
 
 		if(!validVariableCount) {
-			return new Error(propName + ' function must have 2 arguments: RSB (typeof Object), queryResultJSON (type of JSON)');
+			return new Error(propName + ' function must have 3 arguments: RSB (typeof Object), queryResultJSON (type of JSON), error (typeof Object)');
 		}
 	},
 		

@@ -230,65 +230,66 @@ class SearchBar extends React.Component {
 }
 SearchBar.propTypes = PropValidator
 
+export default SearchBar;
 
-class AppComponent extends React.Component {
-	constructor(props) {
-		super(props)
-	}
+// class AppComponent extends React.Component {
+// 	constructor(props) {
+// 		super(props)
+// 	}
 
-  render() {
-  	let version = 1
-  	if(version == 0) {
-  		return (
-	      <div className='index'>
-	      	<div className='container'>
-				<SearchBar
-		      		searchQueryURLFormatter={queryFormat}
-		  		 	resultMapper={mapperFunction}
-		  		 />
-		  		 <button onClick={this.test}></button>
-	      	</div>
-	      </div>
-	    );
-  	} else if(version == 1) {
-  		return (
-	      <div className='index'>
-	      	<div className='container'>
-				<SearchBar
-		      		searchQueryURLFormatter={queryFormat}
-		  		 	resultMapper={mapperFunction}
-					showImage={true}
-					circularImage={true}
-					maxResultsToDisplay={3}
-					searchDelay={400}
-					useNavLink={false}
-					searchButton={{ show: true, onButtonClick: onClickButton }}
-					noResultsMessage={"NO RESULTS"}
-					extraOptions={{"TEST": "Bob"}}
-		  		 />
-	      	</div>
-	      </div>
-	    );
-  	} else {
-  		return (
-	      <div className='index'>
-	      	<div className='container'>
-				<SearchBar
-		      		searchQueryURLFormatter={queryFormat}
-		  		 	resultMapper={mapperFunction}
-		  		 	customSearchBarProducer={customSearchBarGenerator}
-		  		 	customResultsProducer={customResultGenerator}
-		  		 	customLoadingBoxProducer={customLoadingBarGenerator}
-		  		 	customNoResultProducer={customNoResultProducer}
-		  		 />
-	      	</div>
-	      </div>
-	    );
-  	}
-  }
-}
+//   render() {
+//   	let version = 1
+//   	if(version == 0) {
+//   		return (
+// 	      <div className='index'>
+// 	      	<div className='container'>
+// 				<SearchBar
+// 		      		searchQueryURLFormatter={queryFormat}
+// 		  		 	resultMapper={mapperFunction}
+// 		  		 />
+// 		  		 <button onClick={this.test}></button>
+// 	      	</div>
+// 	      </div>
+// 	    );
+//   	} else if(version == 1) {
+//   		return (
+// 	      <div className='index'>
+// 	      	<div className='container'>
+// 				<SearchBar
+// 		      		searchQueryURLFormatter={queryFormat}
+// 		  		 	resultMapper={mapperFunction}
+// 					showImage={true}
+// 					circularImage={true}
+// 					maxResultsToDisplay={3}
+// 					searchDelay={400}
+// 					useNavLink={false}
+// 					searchButton={{ show: true, onButtonClick: onClickButton }}
+// 					noResultsMessage={"NO RESULTS"}
+// 					extraOptions={{"TEST": "Bob"}}
+// 		  		 />
+// 	      	</div>
+// 	      </div>
+// 	    );
+//   	} else {
+//   		return (
+// 	      <div className='index'>
+// 	      	<div className='container'>
+// 				<SearchBar
+// 		      		searchQueryURLFormatter={queryFormat}
+// 		  		 	resultMapper={mapperFunction}
+// 		  		 	customSearchBarProducer={customSearchBarGenerator}
+// 		  		 	customResultsProducer={customResultGenerator}
+// 		  		 	customLoadingBoxProducer={customLoadingBarGenerator}
+// 		  		 	customNoResultProducer={customNoResultProducer}
+// 		  		 />
+// 	      	</div>
+// 	      </div>
+// 	    );
+//   	}
+//   }
+// }
 
-export default AppComponent;
+// export default AppComponent;
 
 // readme:
 // RSB aims to acheive two things:
