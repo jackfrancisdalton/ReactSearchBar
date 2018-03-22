@@ -11,8 +11,17 @@ class CustomLoadingCircle extends React.Component {
 	}
 
 	render() {
+
+		const style = {
+			"border": "3px solid red"
+		}
+
 		return(
-			<div>LOADING...</div>
+			<div style={style}>
+				<div>
+					Custom Loading Component
+				</div>
+			</div>
 		)
 	}
 }
@@ -23,9 +32,14 @@ class CustomSearchResult extends React.Component {
 	}
 
 	render() {
+		const style = {
+			"border": "3px solid green",
+			"display": "block"
+		}
+
 		return(
-			<a href={this.props.targetURL} onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}>
-				<div>{this.props.title} - {this.props.isSelected.toString()}</div>
+			<a style={style} href={this.props.targetURL} onMouseOver={() => this.props.onHoverSelect(this.props.keyRef)}>
+				<div>Custom Result : {this.props.title}</div>
 			</a>
 		)
 	}
@@ -33,9 +47,15 @@ class CustomSearchResult extends React.Component {
 
 class CustomSearchBar extends React.Component {
 	render() {
+
+		const style = {
+			"border": "3px solid yellow"
+		}
+
 		return(
-			<div>
+			<div style={style}>
 				<form>
+					<h1>Custom Search Bar</h1>
 					<div>
 						<input type='text'
 							value={this.props.searchValue}
@@ -44,7 +64,12 @@ class CustomSearchBar extends React.Component {
 							onChange={this.props.onChange}
 							className='search-input-text' />
 					</div>
-					<button>Search Now</button>
+					<label> video </label>
+					<input type="checkbox" />
+					<label> audio </label>
+					<input type="checkbox" />
+					<label> image </label>
+					<input type="checkbox" />
 				</form>
 			</div>
 		)
@@ -57,8 +82,13 @@ class CustomNoResult extends React.Component {
 	}
 
 	render() {
+
+		const style = {
+			"border": "3px solid blue"
+		}
+
 		return(
-			<div>no resultass</div>
+			<div style={style}>custom no-results component</div>
 		)
 	}
 }
@@ -99,7 +129,12 @@ let onClickButton = function(RSBRef, event, searchQuery, extraOptions) {
 	console.log("HIT")
 }
 
-let mapperFunction = function(RSB, queryResultJSON) {
+let mapperFunction = function(RSB, queryResultJSON, requestError) {
+
+	if(requestError) {
+		return [];
+	}
+	
 	let formattedObjects = [];
 	
 	if(!isEmptyObject(queryResultJSON)) {
@@ -109,9 +144,9 @@ let mapperFunction = function(RSB, queryResultJSON) {
 
 			if(hasAnyFields && isObject) {
 				let newObject = {};
-				newObject.title = item.groupName;
-				newObject.imageURL = item.imgURL;
-				newObject.targetURL = item.targetURL;
+				newObject.title = item.name;
+				newObject.imageURL = "https://www.fillmurray.com/100/100";
+				newObject.targetURL = "www.website./com/myurl/" + item.id;
 				formattedObjects.push(newObject);
 			}
 		});
@@ -121,7 +156,7 @@ let mapperFunction = function(RSB, queryResultJSON) {
 }
 
 let queryFormat = function(RSB, searchQuery, extraQueryOptions) {
-	let URLBase = 'http://localhost:3030/groups'
+	let URLBase = 'https://jsonplaceholder.typicode.com/userdfds'
 	return URLBase;
 }
 

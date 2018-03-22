@@ -82,7 +82,13 @@ const resultFetch = function (self, finalSearchURL, isActive) {
 						selectedResult: 0
 					});
 				}).catch(function(error) {
-					console.error("error: ", error)
+					let formattedResults = self.props.resultMapper(self, null, error)
+
+					self.setState({
+						resultSet: formattedResults,
+						resultsLoading: false,
+						selectedResult: 0
+					});
 				})
 		}
 	}, self.props.searchDelay));

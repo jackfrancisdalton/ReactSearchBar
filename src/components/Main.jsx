@@ -3,7 +3,6 @@ import styles from 'styles/App.sass'
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import PropValidator from './PropValidator.jsx'
-
 import ComponentFunctions from './ComponentFunctions.jsx'
 
 import {
@@ -217,9 +216,12 @@ SearchBar.propTypes = PropValidator
 
 
 class AppComponent extends React.Component {
+	constructor(props) {
+		super(props)
+	}
+
   render() {
   	let version = 2
-
   	if(version == 0) {
   		return (
 	      <div className='index'>
@@ -228,6 +230,7 @@ class AppComponent extends React.Component {
 		      		searchQueryURLFormatter={queryFormat}
 		  		 	resultMapper={mapperFunction}
 		  		 />
+		  		 <button onClick={this.test}></button>
 	      	</div>
 	      </div>
 	    );
