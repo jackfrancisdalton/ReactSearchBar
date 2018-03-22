@@ -64,6 +64,8 @@ class SearchBar extends React.Component {
 
     componentWillUnmount() {
         document.removeEventListener('mousedown', this.handleClickOutside);
+
+        // clear all query timeouts on unmount
         this.timeouts.forEach(clearTimeout);
     }
 
@@ -113,6 +115,21 @@ class SearchBar extends React.Component {
     	return ComponentFunctions.generateCustomResults(this)
     }
 
+    //====================== public functions
+
+    setSearchValue(searchTerm) {
+    	this.setState({ searchQuery: searchTerm })
+    }
+
+    getRSBObject() {
+    	return this;
+    }
+
+    getResultsArray() {
+    	return this.state.resultSet;
+    }
+
+
 	render() {
 		let self = this;
 		let results = [];
@@ -128,8 +145,8 @@ class SearchBar extends React.Component {
 
 		// If a loading bar is supplied overwrite the out-of-box Component
 		let loadingBar
-		if(this.props.customLoadingBarProducer) {
-			loadingBar = this.props.customLoadingBarProducer(self)
+		if(this.props.customLoadingBoxProducer) {
+			loadingBar = this.props.customLoadingBoxProducer(self)
 		} else {
 			loadingBar = (
 				<div id="loading-results-cover" className='loading-results-cover'>
@@ -214,14 +231,13 @@ class SearchBar extends React.Component {
 SearchBar.propTypes = PropValidator
 
 
-
 class AppComponent extends React.Component {
 	constructor(props) {
 		super(props)
 	}
 
   render() {
-  	let version = 2
+  	let version = 1
   	if(version == 0) {
   		return (
 	      <div className='index'>
@@ -262,7 +278,7 @@ class AppComponent extends React.Component {
 		  		 	resultMapper={mapperFunction}
 		  		 	customSearchBarProducer={customSearchBarGenerator}
 		  		 	customResultsProducer={customResultGenerator}
-		  		 	customLoadingBarProducer={customLoadingBarGenerator}
+		  		 	customLoadingBoxProducer={customLoadingBarGenerator}
 		  		 	customNoResultProducer={customNoResultProducer}
 		  		 />
 	      	</div>
@@ -303,7 +319,7 @@ export default AppComponent;
 	// ========= Custom options
 	// customSearchBarProducer 
 	// customResultsProducer
-	// customLoadingBarProducer 
+	// customLoadingBoxProducer 
 	// customNoResultProducer
 
 //TODO

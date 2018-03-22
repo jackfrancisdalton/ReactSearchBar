@@ -69,12 +69,22 @@ const handleKeyDown = function(self, e) {
 }
 
 const resultFetch = function (self, finalSearchURL, isActive) {
+
+	// Add query fetch that will run on timeout to stack 
 	self.timeouts.push(setTimeout(function() {
+
+		// if query firing is active
 		if(isActive) {
  			let promise = axios.get(finalSearchURL)
 				.then(response => response.data)
 				.then(data => {
+
+					// Map the returned results to a view model
 					let formattedResults = self.props.resultMapper(self, data)
+
+					if(!formattedResults) {
+						formattedResults = []
+					}
 
 					self.setState({
 						resultSet: formattedResults,
@@ -82,7 +92,13 @@ const resultFetch = function (self, finalSearchURL, isActive) {
 						selectedResult: 0
 					});
 				}).catch(function(error) {
+
+					// If error, pass the error to the resultMapper
 					let formattedResults = self.props.resultMapper(self, null, error)
+
+					if(!formattedResults) {
+						formattedResults = []
+					}
 
 					self.setState({
 						resultSet: formattedResults,
@@ -187,7 +203,10 @@ const generateCustomResults = function (self) {
 	let selfRef = self;
 	let results = [];
 
+	// For each formatted result
 	self.state.resultSet.forEach(function(item, idx) {
+
+		// Limit to the resultToDisplay count
 		if(selfRef.props.resultsToDisplay > idx) {
 			let isSelected = ((selfRef.state.selectedResult == idx) ? true : false)
 			let customDOMResult = selfRef.props.customResultsProducer(selfRef, idx, item)

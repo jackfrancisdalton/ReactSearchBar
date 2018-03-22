@@ -43,7 +43,6 @@ class SearchResult extends React.Component {
 			];
 		}
 
-
 		if(this.props.useNavLink) {
 			return (
 				<NavLink to={this.props.targetURL} title={this.props.title}
