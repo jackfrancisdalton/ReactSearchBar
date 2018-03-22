@@ -61,7 +61,7 @@ When using the out-of-box results component the values you wish to display *must
 
 `resultMapper` must return an array. If nothing is returned from your `resultMapper` an empty array will be assigned as the default value;
 
-*IMPORTANT*: In this example the values are mapped to properties for the out-of-box result component. If you are using `customResultsProducer` please see the explanation [here](####customresultcomponentgenerator-implementation), for configuring resultMapper for a custom components.
+*IMPORTANT*: In this example the values are mapped to properties for the out-of-box result component. If you are using `customResultsProducer` please see the explanation [here](####customresultsproducer-implementation), for configuring resultMapper for a custom components.
 
 Example:
 ```javascript
@@ -94,7 +94,7 @@ The following properties are not required, but allow you to configure RSB to mee
 | **showImage** | *Boolean* | If set to `true` search results will display a square image
 | **circleImage** | *Boolean* | If `showImage` is true, you can make the image a circle by setting this property to true
 | **noResultsMessage** | *String* | The message displayed when no result is returned from the server |
-| **searchButton** | *object* | {show: Boolean, onClick: function} TO DOOOOOOOOOO |
+| **searchButton** | *object* | Requires an object with the format {show: Boolean, onClick: function}. If `show` is true a button will be appended to the search bar. The passed onClick function will be called when the button is clicked, and takes the format `function(RSBRef, event, searchQuery, extraOptions)` |
 | **extraOptions** | *Any* | This object will be passed to your `searchQueryURLFormatter` function. The intention is to allow data to impact the search query. For example if you create a filter box, you can pass a JSON object of { onlyFriends: true }, and append that value to the search query before it is sent |
 
 ### Custom Components
@@ -107,7 +107,7 @@ If the out-of-box  implementation doesn't fit your needs, RSB allows you replace
 | **customLoadingBoxProducer** | *function* | Replaces the out-of-box "loading-spinner" DOM with your own bespoke React component |
 | **customNoResultProducer** | *function* | Replaces the out-of-box "no results" DOM with your own bespoke React component |
 
-#### `customSearchBarProducer` Implementation
+#### customSearchBarProducer Implementation
 
 Your `customResultsProducer` function is supplied 5 arguments by RSB:
 * *RSB* : Exposes all internal values stored by RSB
@@ -151,7 +151,7 @@ class CustomSearchBar extends React.Component {
 }
 ```
 
-#### customResultsProducer implementation
+#### customResultsProducer Implementation
 
 Your `customResultsProducer` function is supplied 3 arguments by RSB:
 * *RSB* : Exposes all internal values stored by RSB
@@ -200,7 +200,7 @@ let resultMapper = function(queryReturn) {
 }
 ```
 
-#### customNoResultProducer 
+#### customNoResultProducer Implementation
 
 Your `customNoResultProducer` function is supplied with a single argument by RSB:
 * RSB : Exposes all internal values stored by RSB
@@ -225,7 +225,7 @@ class CustomNoResult extends React.Component {
 
 ```
 
-#### customLoadingBoxProducer 
+#### customLoadingBoxProducer Implementation
 
 Your `customLoadingBoxProducer` function is supplied with a single argument by RSB:
 * *RSB* : Exposes all internal values stored by RSB
