@@ -9,9 +9,21 @@ Generic functions RSB handles :
 * Handling when search requests are loading
 * Handling when no results are found
 
-![alt text](readmeImages/custom_box.png "Description goes here")
-![alt text](readmeImages/out_of_box_version.PNG "Description goes here")
-![alt text](readmeImages/out_of_box_version_with_options.PNG "Description goes here")
+
+| ![alt text](readmeImages/out_of_box_version.PNG "Basic RSB") | 
+|:--:| 
+| *Basic RSB* |
+
+| ![alt text](readmeImages/out_of_box_version_with_options.PNG "Configured RSB") | 
+|:--:| 
+| *Configured RSB* |
+
+
+| ![alt text](readmeImages/custom_box.png "Fully Customised RSB") | 
+|:--:| 
+| *Fully Customised RSB* |
+
+
 
 ## Properties
 
